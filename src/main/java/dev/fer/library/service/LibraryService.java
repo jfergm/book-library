@@ -31,4 +31,8 @@ public class LibraryService {
   public List<Library> getLibraries() {
     return (List<Library>) libraryRepository.findAll();
   }
+
+  public Library createLibrary(Library library) {
+    return libraryRepository.save(library);
+  }
 }

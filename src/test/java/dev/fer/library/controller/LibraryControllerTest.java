@@ -4,15 +4,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import dev.fer.library.entity.Library;
 import dev.fer.library.exception.LibraryNotFoundException;
 import dev.fer.library.service.LibraryService;
+import dev.fer.library.utils.TestUtils;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.*;
@@ -44,9 +49,9 @@ public class LibraryControllerTest {
     when(libraryService.getLibaryByID(1L)).thenReturn(libraries.getFirst());
 
     mockMvc.perform(get("/libraries/1"))
-    .andExpect(status().isOk())
-    .andExpect(jsonPath("$.id").value("1"))
-    .andExpect(jsonPath("$.name").value("Library 1"));
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value("1"))
+      .andExpect(jsonPath("$.name").value("Library 1"));
   }
 
   @Test
@@ -64,6 +69,23 @@ public class LibraryControllerTest {
     mockMvc.perform(get("/libraries"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(3)));
+  }
+
+  @Test
+  void shouldReturnCreatedAndLocation() throws Exception {
+    Library libReq = new Library(null, "Library");
+
+    when(libraryService.createLibrary(any())).thenReturn(libraries.getFirst());
+
+    mockMvc
+      .perform(
+        post("/libraries")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(libReq)))
+      .andExpect(status().isCreated())
+      .andExpect(header().string("Location", containsString("/libraries/1")));
+
+    verify(libraryService).createLibrary(any());
   }
 
 }

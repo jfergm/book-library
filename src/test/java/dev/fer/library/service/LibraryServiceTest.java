@@ -1,6 +1,7 @@
 package dev.fer.library.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,7 +64,7 @@ public class LibraryServiceTest {
   }
 
   @Test
-  void ShouldReturnLibraries() {
+  void shouldReturnLibraries() {
     when(libraryRepository.findAll()).thenReturn(libraries);
 
     List<Library> libs = libraryService.getLibraries();
@@ -72,5 +73,15 @@ public class LibraryServiceTest {
     assertThat(libs.size()).isEqualTo(3);
     assertThat(libs.getFirst().getId()).isEqualTo(libraries.getFirst().getId());
     verify(libraryRepository).findAll();
+  }
+
+  @Test
+  void shouldAddLibrary() {
+    when(libraryRepository.save(any(Library.class))).thenReturn(libraries.getFirst());
+
+    Library library = libraryService.createLibrary(new Library(null, "Library 1"));
+
+    assertThat(library.getId()).isNotNull();
+    verify(libraryRepository).save(any(Library.class));
   }
 }
