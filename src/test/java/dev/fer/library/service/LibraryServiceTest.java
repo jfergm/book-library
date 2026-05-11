@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +30,16 @@ public class LibraryServiceTest {
   @InjectMocks
   LibraryService libraryService;
 
+  private List<Library> libraries;
+
+  @BeforeEach
+  void setUp() {
+    libraries = new ArrayList<>();
+    libraries.add(new Library(1L, "Library 1"));
+    libraries.add(new Library(2L, "Library 2"));
+    libraries.add(new Library(3L, "Library 3"));
+  }
+
   @Test
   void shouldGetLibrary() {
 
@@ -47,5 +60,17 @@ public class LibraryServiceTest {
 
     assertThrows(LibraryNotFoundException.class, () -> libraryService.getLibaryByID(999L));
     verify(libraryRepository).findById(999L);
+  }
+
+  @Test
+  void ShouldReturnLibraries() {
+    when(libraryRepository.findAll()).thenReturn(libraries);
+
+    List<Library> libs = libraryService.getLibraries();
+
+
+    assertThat(libs.size()).isEqualTo(3);
+    assertThat(libs.getFirst().getId()).isEqualTo(libraries.getFirst().getId());
+    verify(libraryRepository).findAll();
   }
 }

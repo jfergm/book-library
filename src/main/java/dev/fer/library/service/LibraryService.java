@@ -1,5 +1,6 @@
 package dev.fer.library.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -25,5 +26,9 @@ public class LibraryService {
     }
 
     return library.get();
+  }
+
+  public List<Library> getLibraries() {
+    return (List<Library>) libraryRepository.findAll();
   }
 }

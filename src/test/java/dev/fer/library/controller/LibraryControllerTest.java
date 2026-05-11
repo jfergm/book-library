@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,15 @@ public class LibraryControllerTest {
 
     mockMvc.perform(get("/libraries/1"))
       .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturnListOfLibraries() throws Exception {
+    when(libraryService.getLibraries()).thenReturn(libraries);
+
+    mockMvc.perform(get("/libraries"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", hasSize(3)));
   }
 
 }
