@@ -35,4 +35,16 @@ public class LibraryService {
   public Library createLibrary(Library library) {
     return libraryRepository.save(library);
   }
+
+  public Library updateLibrary(Long id, Library update) {
+    Optional<Library> library = libraryRepository.findById(id);
+
+    if (library.isEmpty()) {
+      throw new LibraryNotFoundException();
+    }
+
+    Library updated = new Library(library.get().getId(), update.getName());
+
+    return libraryRepository.save(updated);
+  }
 }

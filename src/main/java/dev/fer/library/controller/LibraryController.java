@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -52,5 +54,10 @@ public class LibraryController {
       return ResponseEntity.created(location).build();
   }
   
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> updateLibrary(@PathVariable Long id, @RequestBody Library update) {   
+    libraryService.updateLibrary(id, update);   
+    return ResponseEntity.noContent().build();
+  }
   
 }

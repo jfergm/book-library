@@ -2,6 +2,8 @@ package dev.fer.library.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -83,5 +85,31 @@ public class LibraryServiceTest {
 
     assertThat(library.getId()).isNotNull();
     verify(libraryRepository).save(any(Library.class));
+  }
+
+  @Test
+  void shouldUpdateLibrary() {
+    Library existing = libraries.getFirst();
+    Library update = new Library(1L, "Library updated");
+
+    when(libraryRepository.findById(1L)).thenReturn(Optional.of(existing));
+    when(libraryRepository.save(any(Library.class))).thenAnswer(i -> i.getArguments()[0]);
+
+    Library updated = libraryService.updateLibrary(1L, update);
+
+    assertThat(updated.getName()).isEqualTo("Library updated");
+    verify(libraryRepository).findById(1L);
+    verify(libraryRepository).save(any(Library.class));
+  }
+
+  @Test
+  void shouldThrowWhenUpdateInvalidLibraryID() {
+    when(libraryRepository.findById(1L)).thenReturn(Optional.empty());
+
+    assertThrows(LibraryNotFoundException.class, 
+      () -> libraryService.updateLibrary(1L, libraries.getFirst()));
+    
+    verify(libraryRepository).findById(anyLong());
+    verify(libraryRepository, times(0)).save(any(Library.class));
   }
 }
