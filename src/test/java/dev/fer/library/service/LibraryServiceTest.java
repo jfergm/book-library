@@ -112,4 +112,24 @@ public class LibraryServiceTest {
     verify(libraryRepository).findById(anyLong());
     verify(libraryRepository, times(0)).save(any(Library.class));
   }
+
+  @Test
+  void shouldDeleteLibrary() {
+    when(libraryRepository.existsById(1L)).thenReturn(true);
+
+    libraryService.deleteLibrary(1L);
+
+    verify(libraryRepository).existsById(1L);
+    verify(libraryRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenDeleteInvalidLibrary() {
+    when(libraryRepository.existsById(1L)).thenReturn(false);
+
+    assertThrows(LibraryNotFoundException.class, () -> libraryService.deleteLibrary(1L));
+
+    verify(libraryRepository).existsById(1L);
+    verify(libraryRepository, times(0)).deleteById(1L);
+  }
 }

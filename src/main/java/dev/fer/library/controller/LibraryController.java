@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,12 @@ public class LibraryController {
   public ResponseEntity<Void> updateLibrary(@PathVariable Long id, @RequestBody Library update) {   
     libraryService.updateLibrary(id, update);   
     return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteLibrary(@PathVariable Long id) {
+    libraryService.deleteLibrary(id);
+    return ResponseEntity.ok(null);
   }
   
 }

@@ -15,6 +15,8 @@ import dev.fer.library.utils.TestUtils;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -116,6 +118,26 @@ public class LibraryControllerTest {
       .andExpect(status().isNotFound());
 
     verify(libraryService).updateLibrary(anyLong(), any(Library.class));
+  }
+
+  @Test
+  void shouldReturnOkWhenDeleteLibrary() throws Exception {
+    doNothing().when(libraryService).deleteLibrary(1L);
+
+    mockMvc.perform(delete("/libraries/1"))
+      .andExpect(status().isOk());
+
+    verify(libraryService).deleteLibrary(1L);
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenDeleteInvalidLibrary() throws Exception {
+    doThrow(LibraryNotFoundException.class).when(libraryService).deleteLibrary(1L);
+
+    mockMvc.perform(delete("/libraries/1"))
+      .andExpect(status().isNotFound());
+    
+    verify(libraryService).deleteLibrary(1L);
   }
 
 }

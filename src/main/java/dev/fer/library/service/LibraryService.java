@@ -47,4 +47,13 @@ public class LibraryService {
 
     return libraryRepository.save(updated);
   }
+
+  public void deleteLibrary(Long id) {
+    if (libraryRepository.existsById(id)) {
+      libraryRepository.deleteById(id);
+      return;
+    }
+
+    throw new LibraryNotFoundException();
+  }
 }
