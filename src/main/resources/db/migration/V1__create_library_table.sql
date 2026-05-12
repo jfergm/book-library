@@ -1,0 +1,4 @@
+CREATE TABLE libraries (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255)
+)
