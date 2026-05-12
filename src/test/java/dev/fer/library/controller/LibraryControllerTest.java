@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import dev.fer.library.dto.request.LibraryRequest;
+import dev.fer.library.dto.response.LibraryResponse;
 import dev.fer.library.entity.Library;
 import dev.fer.library.exception.LibraryNotFoundException;
 import dev.fer.library.service.LibraryService;
@@ -36,15 +38,15 @@ public class LibraryControllerTest {
   @MockitoBean
   LibraryService libraryService;
 
-  private List<Library> libraries;
+  private List<LibraryResponse> libraries;
 
   @BeforeEach
   void setUp() {
     this.libraries = new ArrayList<>();
 
-    libraries.add(new Library(1L, "Library 1"));
-    libraries.add(new Library(2L, "Library 2"));
-    libraries.add(new Library(3L, "Library 3"));
+    libraries.add(new LibraryResponse(1L, "Library 1"));
+    libraries.add(new LibraryResponse(2L, "Library 2"));
+    libraries.add(new LibraryResponse(3L, "Library 3"));
   }
 
   @Test
@@ -93,7 +95,7 @@ public class LibraryControllerTest {
 
   @Test
   void shouldReturnNoContentWhenUpdateLibrary() throws Exception {
-    when(libraryService.updateLibrary(anyLong(), any(Library.class))).thenReturn(libraries.getFirst());
+    when(libraryService.updateLibrary(anyLong(), any(LibraryRequest.class))).thenReturn(libraries.getFirst());
     
     mockMvc
       .perform(
@@ -102,12 +104,12 @@ public class LibraryControllerTest {
         .content(TestUtils.objectAsJson(libraries.getFirst())))
       .andExpect(status().isNoContent());
 
-    verify(libraryService).updateLibrary(anyLong(), any(Library.class));
+    verify(libraryService).updateLibrary(anyLong(), any(LibraryRequest.class));
   }
 
   @Test
   void shouldReturnNotFoundWhenUpdateInvalidLibrary() throws Exception {
-    when(libraryService.updateLibrary(anyLong(), any(Library.class)))
+    when(libraryService.updateLibrary(anyLong(), any(LibraryRequest.class)))
       .thenThrow(LibraryNotFoundException.class);
     
     mockMvc
@@ -117,7 +119,7 @@ public class LibraryControllerTest {
         .content(TestUtils.objectAsJson(libraries.getFirst())))
       .andExpect(status().isNotFound());
 
-    verify(libraryService).updateLibrary(anyLong(), any(Library.class));
+    verify(libraryService).updateLibrary(anyLong(), any(LibraryRequest.class));
   }
 
   @Test
