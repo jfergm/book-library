@@ -1,5 +1,6 @@
 package dev.fer.library.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -30,5 +31,9 @@ public class SectionService {
     }
 
     return sectionMapper.toResponse(section.get());
+  }
+
+  public List<SectionResponse> getSections() {
+    return sectionMapper.toResponseList((List<Section>) sectionRepository.findAll());
   }
 }

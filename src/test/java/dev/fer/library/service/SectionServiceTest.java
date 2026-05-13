@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,22 +32,24 @@ public class SectionServiceTest {
 
   private SectionService sectionService;
 
+  private List<Section> sections;
+
   @BeforeEach
   void setUp() {
     sectionService = new SectionService(sectionRepository, sectionMapper);
+    sections = new ArrayList<>();
+    Floor floor = new Floor(1L, new Library(1L, "Library"), "f1", "Description");
+
+    sections.add(new Section(1L, floor, "lit", "Literature", "Description"));
+    sections.add(new Section(2L, floor, "sc", "Science", "Description"));
+    sections.add(new Section(3L, floor, "horr", "Horror", "Description"));
   }
 
   @Test
   void shouldReturnSection() {
     when(sectionRepository.findById(1L)).thenReturn(
       Optional.of(
-        new Section(
-          1L, 
-          new Floor(1L, new Library(1L, "Library"), "f1", ""), 
-          "lit", 
-          "Literature", 
-          "Description"
-        )
+        sections.getFirst()
       )
     );
 
@@ -67,5 +71,15 @@ public class SectionServiceTest {
     assertThrows(SectionNotFoundException.class, () -> sectionService.getSection(1L));
     
     verify(sectionRepository).findById(1L);
+  }
+
+  @Test
+  void shouldReturnSectionList() {
+    when(sectionRepository.findAll()).thenReturn(sections);
+
+    List<SectionResponse> secs = sectionService.getSections();
+
+    assertThat(secs.size()).isEqualTo(3);
+    verify(sectionRepository).findAll();
   }
 }
