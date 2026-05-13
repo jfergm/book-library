@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.fer.library.dto.request.FloorRequest;
+import dev.fer.library.dto.request.FloorUpdateRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Library;
@@ -106,6 +107,34 @@ public class FloorServiceTest {
     verify(libraryRepository).findById(1L);
     verify(floorRepository, times(0)).save(any(Floor.class));
     
+  }
+
+  @Test
+  void shouldUpdateFloor() {
+    when(floorRepository.findById(1L)).thenReturn(Optional.of(floors.getFirst()));
+    when(floorRepository.save(any(Floor.class))).thenAnswer(i -> i.getArguments()[0]);
+
+    FloorResponse floorResponse = floorService.updateFloor(1L, new FloorUpdateRequest("1A", "New Description"));
+    
+    assertThat(floorResponse.code()).isEqualTo("1A");
+    assertThat(floorResponse.description()).isEqualTo("New Description");
+    verify(floorRepository).findById(1L);
+    verify(floorRepository).save(any(Floor.class));
+
+  }
+
+  @Test
+  void shouldThrowWhenUpdateInvalidFloor() {
+    when(floorRepository.findById(1L)).thenReturn(Optional.empty());
+
+    
+    assertThrows(
+      FloorNotFoundException.class,
+      () -> floorService.updateFloor(1L, new FloorUpdateRequest("1A", "New Description"))
+    );
+
+    verify(floorRepository).findById(1L);
+    verify(floorRepository, times(0)).save(any(Floor.class));
   }
 
 }

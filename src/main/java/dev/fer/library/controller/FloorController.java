@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import dev.fer.library.dto.request.FloorRequest;
+import dev.fer.library.dto.request.FloorUpdateRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.service.FloorService;
 
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -53,5 +56,11 @@ public class FloorController {
     return ResponseEntity.created(location).build();
   }
   
-  
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> updateFloor(@PathVariable Long id, @RequestBody FloorUpdateRequest update) {
+      
+    floorService.updateFloor(id, update);
+
+    return ResponseEntity.noContent().build();
+  }
 }

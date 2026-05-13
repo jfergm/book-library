@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.FloorRequest;
+import dev.fer.library.dto.request.FloorUpdateRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Library;
@@ -24,7 +25,11 @@ public class FloorService {
 
   private FloorMapper floorMapper;
 
-  protected FloorService(FloorRepository floorRepository, FloorMapper floorMapper, LibraryRepository libraryRepository) {
+  protected FloorService(
+    FloorRepository floorRepository, 
+    FloorMapper floorMapper, 
+    LibraryRepository libraryRepository
+  ) {
     this.floorRepository = floorRepository;
     this.floorMapper = floorMapper;
     this.libraryRepository = libraryRepository;
@@ -53,7 +58,20 @@ public class FloorService {
 
     Floor floor = floorMapper.toEntity(request, library.get());
 
-
     return floorMapper.toResponse(floorRepository.save(floor));
+  }
+
+  public FloorResponse updateFloor(Long id, FloorUpdateRequest update) {
+    Optional<Floor> floorOpt = floorRepository.findById(id);
+
+    if (floorOpt.isEmpty()) {
+      throw new FloorNotFoundException();
+    }
+
+    Floor floor = floorOpt.get();
+
+    Floor updated = new Floor(floor.getId(), floor.getLibrary(), update.code(), update.description());
+
+    return floorMapper.toResponse(floorRepository.save(updated));
   }
 }

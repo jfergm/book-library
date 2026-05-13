@@ -1,6 +1,7 @@
 package dev.fer.library.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -20,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import dev.fer.library.dto.request.FloorRequest;
+import dev.fer.library.dto.request.FloorUpdateRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.FloorNotFoundException;
@@ -110,5 +112,30 @@ public class FloorControllerTest {
         .content(TestUtils.objectAsJson(floorReq)))
       .andExpect(status().isBadRequest());
 
+  }
+
+  @Test
+  void shouldReturnNoContentWhenUpdate() throws Exception {
+    when(floorService.updateFloor(anyLong(), any(FloorUpdateRequest.class))).thenReturn(floors.getFirst());
+    mockMvc
+      .perform(
+        put("/floors/1").contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(new FloorUpdateRequest("1A", "Description"))))
+      .andExpect(status().isNoContent());
+
+    verify(floorService).updateFloor(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenUpdateInvalidFloor() throws Exception {
+    when(floorService.updateFloor(anyLong(), any(FloorUpdateRequest.class))).thenThrow(FloorNotFoundException.class);
+
+    mockMvc
+      .perform(
+        put("/floors/1").contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(new FloorUpdateRequest("1A", "Description"))))
+      .andExpect(status().isNotFound());
+
+    verify(floorService).updateFloor(anyLong(), any());
   }
 }
