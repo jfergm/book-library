@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.exception.FloorNotFoundException;
 import dev.fer.library.service.FloorService;
+import static org.hamcrest.Matchers.*;
 
 @WebMvcTest(FloorController.class)
 public class FloorControllerTest {
@@ -60,5 +61,16 @@ public class FloorControllerTest {
 
     mockMvc.perform(get("/floors/1"))
       .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturnFloorList() throws Exception {
+    when(floorService.getFloors()).thenReturn(floors);
+    
+    mockMvc.perform(get("/floors"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", hasSize(4)));
+
+    verify(floorService).getFloors();
   }
 }

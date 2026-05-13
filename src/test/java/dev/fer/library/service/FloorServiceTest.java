@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,17 +32,25 @@ public class FloorServiceTest {
 
   private FloorMapper floorMapper = new FloorMapper();
 
+  private List<Floor> floors;
+
+  private static Library library = new Library(1L, "Library");
+
   @BeforeEach
   void setUp() {
     floorService = new FloorService(floorRepository, floorMapper);
+    floors = new ArrayList<>();
+    floors.add(new Floor(1L, library, "1A", "Description"));
+    floors.add(new Floor(2L, library, "2A", "Description"));
+    floors.add(new Floor(3L, library, "3A", "Description"));
+    floors.add(new Floor(4L, new Library(2L, "Library 2"), "1", "Description"));
   }
 
   @Test
   void shouldReturnFloor() {
-    Library lib = new Library(1L ,"Library");
     
     when(floorRepository.findById(1L)).thenReturn(
-      Optional.of(new Floor(1L, lib, "1", ""))
+      Optional.of(new Floor(1L, library, "1", ""))
     );
 
     FloorResponse floor = floorService.getFloor(1L);
@@ -57,6 +67,16 @@ public class FloorServiceTest {
     
     assertThrows(FloorNotFoundException.class, () -> floorService.getFloor(1L) );
     verify(floorRepository).findById(1L);
+  }
+
+  @Test
+  void shouldReturnFloorList() {
+    when(floorRepository.findAll()).thenReturn(floors);
+
+    List<FloorResponse> fs = floorService.getFloors();
+
+    assertThat(fs.size()).isEqualTo(4);
+    verify(floorRepository).findAll();
   }
 
 }

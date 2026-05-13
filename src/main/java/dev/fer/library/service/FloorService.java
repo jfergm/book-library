@@ -1,5 +1,6 @@
 package dev.fer.library.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -30,5 +31,9 @@ public class FloorService {
     }
 
     return floorMapper.toResponse(floor.get());
+  }
+
+  public List<FloorResponse> getFloors() {
+    return floorMapper.toResponseList((List<Floor>)floorRepository.findAll());
   }
 }
