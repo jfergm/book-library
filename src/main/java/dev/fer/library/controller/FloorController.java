@@ -13,6 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,5 +63,12 @@ public class FloorController {
     floorService.updateFloor(id, update);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteFloor(@PathVariable Long id) {
+    floorService.deleteFloor(id);
+
+    return ResponseEntity.ok(null);
   }
 }

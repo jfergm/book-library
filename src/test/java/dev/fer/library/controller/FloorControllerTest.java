@@ -2,6 +2,8 @@ package dev.fer.library.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -137,5 +139,25 @@ public class FloorControllerTest {
       .andExpect(status().isNotFound());
 
     verify(floorService).updateFloor(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnOkWhenDeleteFloor() throws Exception {
+    doNothing().when(floorService).deleteFloor(1L);
+
+    mockMvc.perform(delete("/floors/1"))
+      .andExpect(status().isOk());
+
+    verify(floorService).deleteFloor(1L);
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenDeleteInvalidFloor() throws Exception {
+    doThrow(FloorNotFoundException.class).when(floorService).deleteFloor(1L);
+
+    mockMvc.perform(delete("/floors/1"))
+      .andExpect(status().isNotFound());
+    
+    verify(floorService).deleteFloor(1L);
   }
 }

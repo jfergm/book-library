@@ -74,4 +74,12 @@ public class FloorService {
 
     return floorMapper.toResponse(floorRepository.save(updated));
   }
+
+  public void deleteFloor(Long id) {
+    if (floorRepository.existsById(id)) {
+      floorRepository.deleteById(id);
+      return;
+    }
+    throw new FloorNotFoundException();
+  }
 }

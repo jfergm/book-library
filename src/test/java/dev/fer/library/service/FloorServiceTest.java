@@ -137,4 +137,23 @@ public class FloorServiceTest {
     verify(floorRepository, times(0)).save(any(Floor.class));
   }
 
+  @Test
+  void shouldDeleteFloor() {
+    when(floorRepository.existsById(1L)).thenReturn(true);
+
+    floorService.deleteFloor(1L);
+
+    verify(floorRepository).existsById(1L);
+    verify(floorRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenDeleteInvalidFloor() {
+    when(floorRepository.existsById(1L)).thenReturn(false);
+
+    assertThrows(FloorNotFoundException.class, () -> floorService.deleteFloor(1L));
+
+    verify(floorRepository).existsById(1L);
+    verify(floorRepository, times(0)).deleteById(1L);
+  }
 }
