@@ -2,18 +2,20 @@ package dev.fer.library.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import dev.fer.library.dto.request.FloorRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.service.FloorService;
 
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -37,6 +39,18 @@ public class FloorController {
     List<FloorResponse> floors = floorService.getFloors();
 
     return ResponseEntity.ok(floors);
+  }
+  
+  @PostMapping("")
+  public ResponseEntity<Void> createFloor(@RequestBody FloorRequest request) {
+    FloorResponse created = floorService.createFloor(request);
+
+    URI location = ServletUriComponentsBuilder
+      .fromCurrentRequestUri()
+      .path("/{id}")
+      .build(created.id());
+
+    return ResponseEntity.created(location).build();
   }
   
   

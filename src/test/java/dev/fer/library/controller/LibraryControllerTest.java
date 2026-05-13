@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import dev.fer.library.dto.request.LibraryRequest;
 import dev.fer.library.dto.response.LibraryResponse;
-import dev.fer.library.entity.Library;
 import dev.fer.library.exception.LibraryNotFoundException;
 import dev.fer.library.service.LibraryService;
 import dev.fer.library.utils.TestUtils;
@@ -78,7 +77,7 @@ public class LibraryControllerTest {
 
   @Test
   void shouldReturnCreatedAndLocation() throws Exception {
-    Library libReq = new Library(null, "Library");
+    LibraryRequest libReq = new LibraryRequest("Library");
 
     when(libraryService.createLibrary(any())).thenReturn(libraries.getFirst());
 

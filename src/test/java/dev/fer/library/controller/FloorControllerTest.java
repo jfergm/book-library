@@ -1,10 +1,12 @@
 package dev.fer.library.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +15,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import dev.fer.library.dto.request.FloorRequest;
 import dev.fer.library.dto.response.FloorResponse;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.FloorNotFoundException;
 import dev.fer.library.service.FloorService;
+import dev.fer.library.utils.TestUtils;
+
 import static org.hamcrest.Matchers.*;
 
 @WebMvcTest(FloorController.class)
@@ -72,5 +79,36 @@ public class FloorControllerTest {
       .andExpect(jsonPath("$", hasSize(4)));
 
     verify(floorService).getFloors();
+  }
+
+  @Test
+  void shouldReturnCreatedAndLocation() throws Exception {
+    FloorRequest floorReq = new FloorRequest(1L, "1", "Description");
+
+    when(floorService.createFloor(any())).thenReturn(floors.getFirst());
+
+    mockMvc
+      .perform(
+        post("/floors")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(floorReq)))
+      .andExpect(status().isCreated())
+      .andExpect(header().string("Location", containsString("/floors/1")));
+
+    verify(floorService).createFloor(any());
+  }
+
+  @Test
+  void shouldReturn400WhenCreateWithInvalidLibrary() throws Exception {
+    when(floorService.createFloor(any())).thenThrow(BadRequestException.class);
+    FloorRequest floorReq = new FloorRequest(1L, "1", "Description");
+
+    mockMvc
+      .perform(
+        post("/floors")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(floorReq)))
+      .andExpect(status().isBadRequest());
+
   }
 }

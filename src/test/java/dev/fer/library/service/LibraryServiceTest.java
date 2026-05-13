@@ -88,7 +88,6 @@ public class LibraryServiceTest {
     when(libraryRepository.save(any(Library.class))).thenReturn(new Library(1L , "Library 1"));
 
     LibraryResponse library = libraryService.createLibrary(new LibraryRequest("Library 1"));
-    System.out.println(library.id());
     assertThat(library.id()).isNotNull();
     verify(libraryRepository).save(any(Library.class));
   }

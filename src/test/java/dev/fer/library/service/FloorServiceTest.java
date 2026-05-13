@@ -2,6 +2,8 @@ package dev.fer.library.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,18 +17,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.fer.library.dto.request.FloorRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Library;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.FloorNotFoundException;
 import dev.fer.library.mapper.FloorMapper;
 import dev.fer.library.repository.FloorRepository;
+import dev.fer.library.repository.LibraryRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class FloorServiceTest {
 
   @Mock
   private FloorRepository floorRepository;
+
+  @Mock
+  private LibraryRepository libraryRepository;
 
   private FloorService floorService;
 
@@ -38,7 +46,7 @@ public class FloorServiceTest {
 
   @BeforeEach
   void setUp() {
-    floorService = new FloorService(floorRepository, floorMapper);
+    floorService = new FloorService(floorRepository, floorMapper, libraryRepository);
     floors = new ArrayList<>();
     floors.add(new Floor(1L, library, "1A", "Description"));
     floors.add(new Floor(2L, library, "2A", "Description"));
@@ -77,6 +85,27 @@ public class FloorServiceTest {
 
     assertThat(fs.size()).isEqualTo(4);
     verify(floorRepository).findAll();
+  }
+
+  @Test
+  void shouldCreateFloor() {
+    when(floorRepository.save(any(Floor.class))).thenReturn(floors.getFirst());
+    when(libraryRepository.findById(1L)).thenReturn(Optional.of(library));
+
+    FloorResponse floor = floorService.createFloor(new FloorRequest(1L, "1A", "Description"));
+    assertThat(floor.id()).isNotNull();
+    verify(libraryRepository).findById(1L);
+    verify(floorRepository).save(any(Floor.class));
+  }
+
+  @Test
+  void shouldThrowWhenCreateWithInvlidLibrary() {
+    when(libraryRepository.findById(1L)).thenReturn(Optional.empty());
+
+    assertThrows(BadRequestException.class, () -> floorService.createFloor(new FloorRequest(1L, "1A", "Description")));
+    verify(libraryRepository).findById(1L);
+    verify(floorRepository, times(0)).save(any(Floor.class));
+    
   }
 
 }
