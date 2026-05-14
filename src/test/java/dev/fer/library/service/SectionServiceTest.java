@@ -2,6 +2,8 @@ package dev.fer.library.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,18 +17,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.fer.library.dto.request.SectionRequest;
 import dev.fer.library.dto.response.SectionResponse;
 import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Library;
 import dev.fer.library.entity.Section;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.SectionNotFoundException;
 import dev.fer.library.mapper.SectionMapper;
+import dev.fer.library.repository.FloorRepository;
 import dev.fer.library.repository.SectionRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class SectionServiceTest {
   @Mock
   private SectionRepository sectionRepository;
+
+  @Mock
+  private FloorRepository floorRepository;
 
   private SectionMapper sectionMapper = new SectionMapper();
 
@@ -36,7 +44,7 @@ public class SectionServiceTest {
 
   @BeforeEach
   void setUp() {
-    sectionService = new SectionService(sectionRepository, sectionMapper);
+    sectionService = new SectionService(sectionRepository, sectionMapper, floorRepository);
     sections = new ArrayList<>();
     Floor floor = new Floor(1L, new Library(1L, "Library"), "f1", "Description");
 
@@ -81,5 +89,37 @@ public class SectionServiceTest {
 
     assertThat(secs.size()).isEqualTo(3);
     verify(sectionRepository).findAll();
+  }
+
+  @Test
+  void shouldCreateSection() {
+    when(sectionRepository.save(any())).thenReturn(sections.getFirst());
+    when(floorRepository.findById(1L)).thenReturn(
+      Optional.of(new Floor(1L, null, null, null))
+    );
+
+    SectionResponse res = sectionService.createSection(
+      new SectionRequest(1L, "lit", "Literature", "Description"));
+
+    assertThat(res).isNotNull();
+    assertThat(res.id()).isEqualTo(1L);
+    assertThat(res.floorId()).isEqualTo(1L);
+    assertThat(res.code()).isEqualTo("lit");
+    assertThat(res.label()).isEqualTo("Literature");
+    assertThat(res.description()).isEqualTo("Description");
+
+    verify(sectionRepository).save(any(Section.class));
+  }
+
+  @Test
+  void shouldThrowWhenCreateWithInvlidLibrary() {
+    when(floorRepository.findById(1L)).thenReturn(Optional.empty());
+
+    assertThrows(BadRequestException.class, () -> sectionService.createSection(
+      new SectionRequest(1L, "lit", "Literature", "")));
+
+    verify(floorRepository).findById(1L);
+    verify(sectionRepository, times(0)).save(any(Section.class));
+    
   }
 }
