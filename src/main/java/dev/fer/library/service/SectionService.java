@@ -91,4 +91,13 @@ public class SectionService {
     
     return sectionMapper.toResponse(sectionRepository.save(updated));
   }
+
+  public void deleteSection(Long id) {
+    if (sectionRepository.existsById(id)) {
+      sectionRepository.deleteById(id);
+      return;
+    }
+
+    throw new SectionNotFoundException();
+  }
 }

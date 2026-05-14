@@ -130,7 +130,10 @@ public class SectionServiceTest {
     when(sectionRepository.findById(1L)).thenReturn(Optional.of(sections.getFirst()));
     when(sectionRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-    SectionResponse res = sectionService.updateSection(1L, new SectionUpdateRequest(1L, "sc", "Science", "Description"));
+    SectionResponse res = sectionService.updateSection(
+      1L, 
+      new SectionUpdateRequest(1L, "sc", "Science", "Description")
+    );
 
     assertThat(res.id()).isEqualTo(1L);
     assertThat(res.floorId()).isEqualTo(1L);
@@ -151,7 +154,10 @@ public class SectionServiceTest {
     );
     when(sectionRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-    SectionResponse res = sectionService.updateSection(1L, new SectionUpdateRequest(2L, "sc", "Science", "Description"));
+    SectionResponse res = sectionService.updateSection(
+      1L, 
+      new SectionUpdateRequest(2L, "sc", "Science", "Description")
+    );
 
     assertThat(res.floorId()).isEqualTo(2L);
 
@@ -164,7 +170,13 @@ public class SectionServiceTest {
   void shouldThrowNotFoundWhenInvalidSection() {
     when(sectionRepository.findById(1L)).thenReturn(Optional.empty());
 
-    assertThrows(SectionNotFoundException.class, () -> sectionService.updateSection(1L, new SectionUpdateRequest(2L, "sc", "Science", "Description")));
+    assertThrows(
+      SectionNotFoundException.class, 
+      () -> sectionService.updateSection(
+        1L, 
+        new SectionUpdateRequest(2L, "sc", "Science", "Description")
+      )
+    );
 
     verify(sectionRepository).findById(1L);
     verify(sectionRepository, times(0)).save(any(Section.class));
@@ -181,5 +193,25 @@ public class SectionServiceTest {
     verify(sectionRepository).findById(1L);
     verify(floorRepository).findById(anyLong());
     verify(sectionRepository, times(0)).save(any(Section.class));
+  }
+
+  @Test
+  void shouldDeleteSection() {
+    when(sectionRepository.existsById(1L)).thenReturn(true);
+
+    sectionService.deleteSection(1L);
+
+    verify(sectionRepository).existsById(1L);
+    verify(sectionRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenDeleteInvalidSection() {
+    when(sectionRepository.existsById(1L)).thenReturn(false);
+
+    assertThrows(SectionNotFoundException.class, () -> sectionService.deleteSection(1L));
+
+    verify(sectionRepository).existsById(1L);
+    verify(sectionRepository, times(0)).deleteById(1L);
   }
 }

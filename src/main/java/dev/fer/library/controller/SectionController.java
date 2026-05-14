@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,5 +59,11 @@ public class SectionController {
   public ResponseEntity<Void> updateSection(@PathVariable Long id, @RequestBody SectionUpdateRequest update) {
     sectionService.updateSection(id, update);
     return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteSection(@PathVariable Long id) {
+    sectionService.deleteSection(id);
+    return ResponseEntity.ok(null);
   }
 }

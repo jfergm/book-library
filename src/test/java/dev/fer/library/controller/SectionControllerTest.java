@@ -4,11 +4,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -111,9 +111,14 @@ public class SectionControllerTest {
       "Description"
     );
 
-    when(sectionService.createSection(any(SectionRequest.class))).thenThrow(BadRequestException.class);
+    when(sectionService.createSection(any(SectionRequest.class)))
+      .thenThrow(BadRequestException.class);
     
-    mockMvc.perform(post("/sections").contentType(MediaType.APPLICATION_JSON).content(TestUtils.objectAsJson(request)))
+    mockMvc
+      .perform(
+        post("/sections")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
       .andExpect(status().isBadRequest());
   
     verify(sectionService).createSection(any(SectionRequest.class));  
@@ -159,5 +164,25 @@ public class SectionControllerTest {
       .andExpect(status().isBadRequest());
 
     verify(sectionService).updateSection(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnOkWhenDeleteSection() throws Exception {
+    doNothing().when(sectionService).deleteSection(1L);
+
+    mockMvc.perform(delete("/sections/1"))
+      .andExpect(status().isOk());
+
+    verify(sectionService).deleteSection(1L);
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenDeleteInvalidSection() throws Exception {
+    doThrow(SectionNotFoundException.class).when(sectionService).deleteSection(1L);
+
+    mockMvc.perform(delete("/sections/1"))
+      .andExpect(status().isNotFound());
+    
+    verify(sectionService).deleteSection(1L);
   }
 }
