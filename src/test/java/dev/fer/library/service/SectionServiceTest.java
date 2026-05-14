@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.fer.library.dto.request.SectionRequest;
+import dev.fer.library.dto.request.SectionUpdateRequest;
 import dev.fer.library.dto.response.SectionResponse;
 import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Library;
@@ -121,5 +123,63 @@ public class SectionServiceTest {
     verify(floorRepository).findById(1L);
     verify(sectionRepository, times(0)).save(any(Section.class));
     
+  }
+
+  @Test
+  void shouldUpdateSection() {
+    when(sectionRepository.findById(1L)).thenReturn(Optional.of(sections.getFirst()));
+    when(sectionRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    SectionResponse res = sectionService.updateSection(1L, new SectionUpdateRequest(1L, "sc", "Science", "Description"));
+
+    assertThat(res.id()).isEqualTo(1L);
+    assertThat(res.floorId()).isEqualTo(1L);
+    assertThat(res.code()).isEqualTo("sc");
+    assertThat(res.label()).isEqualTo("Science");
+    assertThat(res.description()).isEqualTo("Description");
+
+    verify(sectionRepository).findById(1L);
+    verify(sectionRepository).save(any(Section.class));
+    verify(floorRepository, times(0)).findById(anyLong());
+  }
+
+  @Test
+  void shouldFindByIdFloorWhenUpdateToNewFloor() {
+    when(sectionRepository.findById(1L)).thenReturn(Optional.of(sections.getFirst()));
+    when(floorRepository.findById(2L)).thenReturn(
+      Optional.of(new Floor(2L, null, null, null))
+    );
+    when(sectionRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    SectionResponse res = sectionService.updateSection(1L, new SectionUpdateRequest(2L, "sc", "Science", "Description"));
+
+    assertThat(res.floorId()).isEqualTo(2L);
+
+    verify(sectionRepository).findById(1L);
+    verify(sectionRepository).save(any(Section.class));
+    verify(floorRepository).findById(anyLong());
+  }
+
+  @Test
+  void shouldThrowNotFoundWhenInvalidSection() {
+    when(sectionRepository.findById(1L)).thenReturn(Optional.empty());
+
+    assertThrows(SectionNotFoundException.class, () -> sectionService.updateSection(1L, new SectionUpdateRequest(2L, "sc", "Science", "Description")));
+
+    verify(sectionRepository).findById(1L);
+    verify(sectionRepository, times(0)).save(any(Section.class));
+    verify(floorRepository, times(0)).findById(anyLong());
+  }
+
+    @Test
+  void shouldBadRequestWhenInvalidFloor() {
+    when(sectionRepository.findById(1L)).thenReturn(Optional.of(sections.getFirst()));
+    when(floorRepository.findById(2L)).thenReturn(Optional.empty());
+
+    assertThrows(BadRequestException.class, () -> sectionService.updateSection(1L, new SectionUpdateRequest(2L, "sc", "Science", "Description")));
+
+    verify(sectionRepository).findById(1L);
+    verify(floorRepository).findById(anyLong());
+    verify(sectionRepository, times(0)).save(any(Section.class));
   }
 }

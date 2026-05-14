@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.SectionRequest;
+import dev.fer.library.dto.request.SectionUpdateRequest;
 import dev.fer.library.dto.response.SectionResponse;
 import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Section;
@@ -58,5 +59,36 @@ public class SectionService {
     Section section = sectionMapper.toEntity(request, floor.get());
 
     return sectionMapper.toResponse(sectionRepository.save(section));
+  }
+
+  public SectionResponse updateSection(Long id, SectionUpdateRequest update) {
+    Optional<Section> sectionOptional = sectionRepository.findById(id);
+
+    if (sectionOptional.isEmpty()) {
+      throw new SectionNotFoundException();
+    }
+
+    Section section = sectionOptional.get();
+    Optional<Floor> floor;
+
+    if (section.getFloor().getId() != update.floorId()) {
+      floor = floorRepository.findById(update.floorId());
+    } else {
+      floor = Optional.of(section.getFloor());
+    }
+
+    if (floor.isEmpty()) {
+      throw new BadRequestException();
+    }
+
+    Section updated = new Section(
+      section.getId(),
+      floor.get(),
+      update.code(),
+      update.label(),
+      update.description()
+    );
+    
+    return sectionMapper.toResponse(sectionRepository.save(updated));
   }
 }

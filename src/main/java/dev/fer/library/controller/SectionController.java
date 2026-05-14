@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import dev.fer.library.dto.request.SectionRequest;
+import dev.fer.library.dto.request.SectionUpdateRequest;
 import dev.fer.library.dto.response.SectionResponse;
 import dev.fer.library.service.SectionService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -51,5 +54,9 @@ public class SectionController {
     return ResponseEntity.created(location).build();
   }
   
-  
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> updateSection(@PathVariable Long id, @RequestBody SectionUpdateRequest update) {
+    sectionService.updateSection(id, update);
+    return ResponseEntity.noContent().build();
+  }
 }
