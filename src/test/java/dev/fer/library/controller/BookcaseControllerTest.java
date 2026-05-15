@@ -3,10 +3,12 @@ package dev.fer.library.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -114,6 +116,51 @@ public class BookcaseControllerTest {
       .andExpect(status().isBadRequest());
 
     verify(bookcaseService).createBookcase(any());
+  }
+
+  @Test
+  void shouldReturnNoContentWhenUpdate() throws Exception {
+    when(bookcaseService.updateBookcase(anyLong(), any())).thenReturn(bookcases.getFirst());
+
+    BookcaseRequest update = new BookcaseRequest(1L, "new", "new");
+    mockMvc
+      .perform(
+        put("/bookcases/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(update)))
+      .andExpect(status().isNoContent());
+
+    verify(bookcaseService).updateBookcase(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenUpdateWithInvalidBookcase() throws Exception {
+    when(bookcaseService.updateBookcase(anyLong(), any())).thenThrow(BookcaseNotFoundException.class);
+
+    BookcaseRequest update = new BookcaseRequest(1L, "new", "new");
+    mockMvc
+      .perform(
+        put("/bookcases/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(update)))
+      .andExpect(status().isNotFound());
+
+    verify(bookcaseService).updateBookcase(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateWithInvalidSection() throws Exception {
+    when(bookcaseService.updateBookcase(anyLong(), any())).thenThrow(BadRequestException.class);
+
+    BookcaseRequest update = new BookcaseRequest(1L, "new", "new");
+    mockMvc
+      .perform(
+        put("/bookcases/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(update)))
+      .andExpect(status().isBadRequest());
+
+    verify(bookcaseService).updateBookcase(anyLong(), any());
   }
 
 }

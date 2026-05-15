@@ -117,4 +117,73 @@ public class BookcaseServiceTest {
     verify(sectionRepository).findById(anyLong());
     verify(bookcaseRepository, times(0)).save(any(Bookcase.class));
   }
+
+  @Test
+  void shouldUpdateBookcase() {
+    when(bookcaseRepository.findById(1L)).thenReturn(Optional.of(bookcases.getFirst()));
+    when(bookcaseRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    BookcaseRequest update = new BookcaseRequest(1L, "new code", "new label");
+
+    BookcaseResponse updated = bookcaseService.updateBookcase(1L, update);
+
+    assertThat(updated.id()).isEqualTo(1L);
+    assertThat(updated.sectionId()).isEqualTo(1L);
+    assertThat(updated.code()).isEqualTo("new code");
+    assertThat(updated.label()).isEqualTo("new label");
+
+    verify(bookcaseRepository).findById(1L);
+    verify(bookcaseRepository).save(any(Bookcase.class));
+    verify(sectionRepository, times(0)).findById(anyLong());
+  }
+
+  @Test
+  void shouldFindSectionWhenUpdate() {
+    when(bookcaseRepository.findById(1L)).thenReturn(Optional.of(bookcases.getFirst()));
+    when(sectionRepository.findById(2L)).thenReturn(
+      Optional.of(new Section(2L, null, null, null, null))
+    );
+    when(bookcaseRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    BookcaseRequest update = new BookcaseRequest(2L, "new code", "new label");
+
+    BookcaseResponse updated = bookcaseService.updateBookcase(1L, update);
+
+    assertThat(updated.id()).isEqualTo(1L);
+    assertThat(updated.sectionId()).isEqualTo(2L);
+    assertThat(updated.code()).isEqualTo("new code");
+    assertThat(updated.label()).isEqualTo("new label");
+
+    verify(bookcaseRepository).findById(1L);
+    verify(bookcaseRepository).save(any(Bookcase.class));
+    verify(sectionRepository).findById(2L);
+  }
+
+  @Test
+  void shouldThrowNotFoundWhenInvalidBookcase() {
+    when(bookcaseRepository.findById(999L)).thenReturn(Optional.empty());
+
+    BookcaseRequest update = new BookcaseRequest(2L, "new code", "new label");
+
+    assertThrows(BookcaseNotFoundException.class, () -> bookcaseService.updateBookcase(999L, update));
+
+    verify(bookcaseRepository).findById(999L);
+    verify(bookcaseRepository, times(0)).save(any(Bookcase.class));
+    verify(sectionRepository, times(0)).findById(2L);
+  }
+
+  @Test
+  void shouldThrowBadRequestWhenInvalidSection() {
+    when(bookcaseRepository.findById(1L)).thenReturn(Optional.of(bookcases.getFirst()));
+    when(sectionRepository.findById(99L)).thenReturn(Optional.empty());
+
+    BookcaseRequest update = new BookcaseRequest(99L, "new code", "new label");
+
+    assertThrows(BadRequestException.class, () -> bookcaseService.updateBookcase(1L, update));
+
+    verify(bookcaseRepository).findById(1L);
+    verify(bookcaseRepository, times(0)).save(any(Bookcase.class));
+    verify(sectionRepository).findById(99L);
+  }
+
 }

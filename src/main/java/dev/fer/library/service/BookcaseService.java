@@ -59,4 +59,35 @@ public class BookcaseService {
 
     return bookcaseMapper.toResponse(bookcaseRepository.save(bookcase));
   }
+
+  public BookcaseResponse updateBookcase(Long id, BookcaseRequest request) {
+    Optional<Bookcase> bookcaseOptional = bookcaseRepository.findById(id);
+
+    if (bookcaseOptional.isEmpty()) {
+      throw new BookcaseNotFoundException();
+    }
+
+    Bookcase bookcase = bookcaseOptional.get();
+    
+    Optional<Section> section;
+
+    if (request.sectionId() != bookcase.getSection().getId()) {
+      section = sectionRepository.findById(request.sectionId());
+    } else {
+      section = Optional.of(bookcase.getSection());
+    }
+
+    if (section.isEmpty()) {
+      throw new BadRequestException();
+    }
+
+    Bookcase updated = new Bookcase(
+      bookcase.getId(), 
+      request.code(), 
+      request.label(), 
+      section.get()
+    );
+
+    return bookcaseMapper.toResponse(bookcaseRepository.save(updated));
+  }
 }
