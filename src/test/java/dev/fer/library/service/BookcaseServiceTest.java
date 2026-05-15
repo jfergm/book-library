@@ -2,6 +2,9 @@ package dev.fer.library.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,17 +18,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.fer.library.dto.request.BookcaseRequest;
 import dev.fer.library.dto.response.BookcaseResponse;
 import dev.fer.library.entity.Bookcase;
 import dev.fer.library.entity.Section;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.BookcaseNotFoundException;
 import dev.fer.library.mapper.BookcaseMapper;
 import dev.fer.library.repository.BookcaseRepository;
+import dev.fer.library.repository.SectionRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class BookcaseServiceTest {
   @Mock
   BookcaseRepository bookcaseRepository;
+
+  @Mock
+  SectionRepository sectionRepository;
 
   private BookcaseMapper bookcaseMapper = new BookcaseMapper();
   
@@ -35,7 +44,7 @@ public class BookcaseServiceTest {
 
   @BeforeEach
   void setUp() {
-    bookcaseService = new BookcaseService(bookcaseRepository, bookcaseMapper);
+    bookcaseService = new BookcaseService(bookcaseRepository, bookcaseMapper, sectionRepository);
 
     bookcases = new ArrayList<>();
 
@@ -77,5 +86,35 @@ public class BookcaseServiceTest {
     assertThat(bookcasesResponse.size()).isEqualTo(3);
 
     verify(bookcaseRepository).findAll();
+  }
+
+  @Test
+  void shouldCreateBookcase() {
+    when(bookcaseRepository.save(any())).thenReturn(bookcases.getFirst());
+    when(sectionRepository.findById(1L)).thenReturn(
+      Optional.of(bookcases.getFirst().getSection())
+    );
+
+    BookcaseRequest request = new BookcaseRequest(1L, "1A", "Bookcase 1A");
+
+    BookcaseResponse bookcase = bookcaseService.createBookcase(request);
+
+    assertThat(bookcase.id()).isNotNull();
+    assertThat(bookcase.sectionId()).isEqualTo(1L);
+  
+    verify(sectionRepository).findById(anyLong());
+    verify(bookcaseRepository).save(any(Bookcase.class));
+  }
+
+  @Test
+  void shouldThrowWhenInvalidSection() {
+    when(sectionRepository.findById(1L)).thenReturn(Optional.empty());
+
+    BookcaseRequest request = new BookcaseRequest(1L, "1A", "Bookcase 1A");
+
+    assertThrows(BadRequestException.class, () -> bookcaseService.createBookcase(request));
+  
+    verify(sectionRepository).findById(anyLong());
+    verify(bookcaseRepository, times(0)).save(any(Bookcase.class));
   }
 }

@@ -1,9 +1,13 @@
 package dev.fer.library.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,12 +18,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import dev.fer.library.dto.request.BookcaseRequest;
 import dev.fer.library.dto.response.BookcaseResponse;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.BookcaseNotFoundException;
 import dev.fer.library.service.BookcaseService;
+import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(BookcaseController.class)
 public class BookcaseControllerTest {
@@ -74,4 +82,38 @@ public class BookcaseControllerTest {
 
     verify(bookcaseService).getBookcases();
   }
+
+  @Test
+  void shouldReturnCreatedAndLocationHeader() throws Exception {
+    when(bookcaseService.createBookcase(any())).thenReturn(bookcases.getFirst());
+
+    BookcaseRequest req = new BookcaseRequest(1L, "1A", "Bookcase 1A");
+
+    mockMvc
+      .perform(
+        post("/bookcases")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(req)))
+      .andExpect(status().isCreated())
+      .andExpect(header().string("Location", containsString("/bookcases/1")));
+
+    verify(bookcaseService).createBookcase(any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenInvalidSection() throws Exception {
+    when(bookcaseService.createBookcase(any())).thenThrow(BadRequestException.class);
+
+    BookcaseRequest req = new BookcaseRequest(1L, "1A", "Bookcase 1A");
+
+    mockMvc
+      .perform(
+        post("/bookcases")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(req)))
+      .andExpect(status().isBadRequest());
+
+    verify(bookcaseService).createBookcase(any());
+  }
+
 }
