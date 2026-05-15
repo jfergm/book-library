@@ -4,8 +4,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -161,6 +164,24 @@ public class BookcaseControllerTest {
       .andExpect(status().isBadRequest());
 
     verify(bookcaseService).updateBookcase(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnOkWhenDeleteBookcase() throws Exception {
+    doNothing().when(bookcaseService).deleteBookcase(1L);
+    mockMvc.perform(delete("/bookcases/1"))
+      .andExpect(status().isOk());
+
+    verify(bookcaseService).deleteBookcase(1L);
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenDeleteInvalidBookcase() throws Exception {
+    doThrow(BookcaseNotFoundException.class).when(bookcaseService).deleteBookcase(1L);
+    mockMvc.perform(delete("/bookcases/1"))
+      .andExpect(status().isNotFound());
+
+    verify(bookcaseService).deleteBookcase(1L);
   }
 
 }

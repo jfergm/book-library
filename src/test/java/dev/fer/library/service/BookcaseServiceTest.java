@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -184,6 +185,27 @@ public class BookcaseServiceTest {
     verify(bookcaseRepository).findById(1L);
     verify(bookcaseRepository, times(0)).save(any(Bookcase.class));
     verify(sectionRepository).findById(99L);
+  }
+
+  @Test
+  void shouldDeleteBookcase() {
+    when(bookcaseRepository.existsById(1L)).thenReturn(true);
+    doNothing().when(bookcaseRepository).deleteById(1L);
+
+    bookcaseService.deleteBookcase(1L);
+
+    verify(bookcaseRepository).existsById(1L);
+    verify(bookcaseRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenDeleteInvalidBookcase() {
+    when(bookcaseRepository.existsById(1L)).thenReturn(false);
+
+    assertThrows(BookcaseNotFoundException.class, () -> bookcaseService.deleteBookcase(1L));
+
+    verify(bookcaseRepository).existsById(1L);
+    verify(bookcaseRepository, times(0)).deleteById(1L);
   }
 
 }

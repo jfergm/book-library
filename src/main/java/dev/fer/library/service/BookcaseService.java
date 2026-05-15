@@ -90,4 +90,13 @@ public class BookcaseService {
 
     return bookcaseMapper.toResponse(bookcaseRepository.save(updated));
   }
+
+  public void deleteBookcase(Long id) {
+    if (bookcaseRepository.existsById(id)) {
+      bookcaseRepository.deleteById(id);
+      return;
+    }
+
+    throw new BookcaseNotFoundException();
+  }
 }
