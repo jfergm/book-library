@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 public class Bookcase {
 
   @Id
+  @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 

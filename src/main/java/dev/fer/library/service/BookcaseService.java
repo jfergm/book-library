@@ -1,5 +1,6 @@
 package dev.fer.library.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -30,5 +31,9 @@ public class BookcaseService {
     }
 
     return bookcaseMapper.toResponse(bookcase.get());
+  }
+
+  public List<BookcaseResponse> getBookcases() {
+    return bookcaseMapper.toResponseList((List<Bookcase>) bookcaseRepository.findAll());
   }
 }
