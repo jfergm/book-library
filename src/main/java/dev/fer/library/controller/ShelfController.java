@@ -6,9 +6,13 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.fer.library.dto.response.ShelfResponse;
 import dev.fer.library.service.ShelfService;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -26,5 +30,11 @@ public class ShelfController {
     ShelfResponse response = shelfService.getShelf(id);
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("")
+  public ResponseEntity<List<ShelfResponse>> getShelves() {
+    return ResponseEntity.ok(shelfService.getShelves());
+  }
+  
   
 }

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,23 +31,23 @@ public class ShelfServiceTest {
 
   ShelfService shelfService;
 
+  private List<Shelf> shelves;
+
   @BeforeEach
   void setUp() {
     shelfService = new ShelfService(shelfRepository, shelfMapper);
+
+    shelves = new ArrayList<>();
+
+    Bookcase bookcase = new Bookcase(1L, null, null, null);
+    shelves.add(new Shelf(1L, "A1", "Shelf A1", bookcase));
+    shelves.add(new Shelf(2L, "A2", "Shelf A2", bookcase));
+    shelves.add(new Shelf(3L, "A3", "Shelf A3", bookcase));
   }
   
   @Test
   void shouldReturnShelf() {
-    when(shelfRepository.findById(1L)).thenReturn(
-      Optional.of(
-        new Shelf(
-          1L,
-          "A1",
-          "Shelf A1",
-          new Bookcase(1L, null, null, null)
-        )
-      )
-    );
+    when(shelfRepository.findById(1L)).thenReturn(Optional.of(shelves.getFirst()));
 
     ShelfResponse shelf = shelfService.getShelf(1L);
     
@@ -65,6 +67,16 @@ public class ShelfServiceTest {
     assertThrows(ShelfNotFoundException.class, () -> shelfService.getShelf(1L));
 
     verify(shelfRepository).findById(1L);
+  }
+
+  @Test
+  void shouldReturnShelvesList() {
+    when(shelfRepository.findAll()).thenReturn(shelves);
+
+    List<ShelfResponse> res = shelfService.getShelves();
+
+    assertThat(res.size()).isEqualTo(3);
+    verify(shelfRepository).findAll();
   }
 
 }
