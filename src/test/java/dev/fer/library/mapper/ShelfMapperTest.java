@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.fer.library.dto.request.ShelfRequest;
 import dev.fer.library.dto.response.ShelfResponse;
 import dev.fer.library.entity.Bookcase;
 import dev.fer.library.entity.Shelf;
@@ -48,5 +49,17 @@ public class ShelfMapperTest {
     assertThat(shelvesResponse.get(0).id()).isEqualTo(1L);
     assertThat(shelvesResponse.get(1).id()).isEqualTo(2L);
     assertThat(shelvesResponse.get(2).id()).isEqualTo(3L);
+  }
+
+  @Test
+  void shouldConvertRequestToEntity() {
+    ShelfRequest request = new ShelfRequest("A1", "Shelf A1", 1L);
+    Bookcase bookcase = new Bookcase(1L, null, null, null);
+
+    Shelf shelf = mapper.toEntity(request, bookcase);
+
+    assertThat(shelf.getCode()).isEqualTo("A1");
+    assertThat(shelf.getLabel()).isEqualTo("Shelf A1");
+    assertThat(shelf.getBookcase().getId()).isEqualTo(1L);
   }
 }

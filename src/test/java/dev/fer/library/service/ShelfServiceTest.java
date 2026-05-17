@@ -2,6 +2,9 @@ package dev.fer.library.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,17 +18,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.fer.library.dto.request.ShelfRequest;
 import dev.fer.library.dto.response.ShelfResponse;
 import dev.fer.library.entity.Bookcase;
 import dev.fer.library.entity.Shelf;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.ShelfNotFoundException;
 import dev.fer.library.mapper.ShelfMapper;
+import dev.fer.library.repository.BookcaseRepository;
 import dev.fer.library.repository.ShelfRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ShelfServiceTest {
   @Mock
   ShelfRepository shelfRepository;
+
+  @Mock
+  BookcaseRepository bookcaseRepository;
 
   ShelfMapper shelfMapper = new ShelfMapper();
 
@@ -35,7 +44,7 @@ public class ShelfServiceTest {
 
   @BeforeEach
   void setUp() {
-    shelfService = new ShelfService(shelfRepository, shelfMapper);
+    shelfService = new ShelfService(shelfRepository, shelfMapper, bookcaseRepository);
 
     shelves = new ArrayList<>();
 
@@ -77,6 +86,37 @@ public class ShelfServiceTest {
 
     assertThat(res.size()).isEqualTo(3);
     verify(shelfRepository).findAll();
+  }
+
+  @Test
+  void shouldCreateShelf() {
+    when(bookcaseRepository.findById(anyLong())).thenReturn(
+      Optional.of(shelves.getFirst().getBookcase())
+    );
+    when(shelfRepository.save(any())).thenReturn(shelves.getFirst());
+
+    ShelfRequest request = new ShelfRequest("A1", "Shelf A1", 1L);
+
+    ShelfResponse created = shelfService.createShelf(request);
+
+    assertThat(created.id()).isEqualTo(1L);
+    assertThat(created.code()).isEqualTo("A1");
+    assertThat(created.label()).isEqualTo("Shelf A1");
+    assertThat(created.bookcaseId()).isEqualTo(1L);
+
+    verify(shelfRepository).save(any());
+    verify(bookcaseRepository).findById(anyLong());
+  }
+
+  @Test
+  void shouldThrowWhenCreateWithInvalidBookcase() {
+    when(bookcaseRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    ShelfRequest request = new ShelfRequest("A1", "Shelf A1", 1L);
+
+    assertThrows(BadRequestException.class, () -> shelfService.createShelf(request));    
+    verify(shelfRepository, times(0)).save(any());
+    verify(bookcaseRepository).findById(anyLong());
   }
 
 }

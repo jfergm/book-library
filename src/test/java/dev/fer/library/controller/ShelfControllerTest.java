@@ -1,9 +1,13 @@
 package dev.fer.library.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,12 +18,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import dev.fer.library.dto.request.ShelfRequest;
 import dev.fer.library.dto.response.ShelfResponse;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.ShelfNotFoundException;
 import dev.fer.library.service.ShelfService;
+import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(ShelfController.class)
 public class ShelfControllerTest {
@@ -73,5 +81,30 @@ public class ShelfControllerTest {
       .andExpect(jsonPath("$", hasSize(3)));
 
     verify(shelfService).getShelves();
+  }
+
+  @Test
+  void shouldReturnCreatedAndLocation() throws Exception {
+    when(shelfService.createShelf(any())).thenReturn(shelves.getFirst());
+
+    ShelfRequest request = new ShelfRequest("A1", "Shelf A1", 1L);
+
+    mockMvc.perform(post("/shelves").contentType(MediaType.APPLICATION_JSON).content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isCreated())
+      .andExpect(header().string("Location", containsString("/shelves/1")));
+    
+    verify(shelfService).createShelf(any());
+  }
+
+  @Test
+  void shouldReturnBadRequest() throws Exception {
+    when(shelfService.createShelf(any())).thenThrow(BadRequestException.class);
+
+    ShelfRequest request = new ShelfRequest("A1", "Shelf A1", 1L);
+
+    mockMvc.perform(post("/shelves").contentType(MediaType.APPLICATION_JSON).content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
+    
+    verify(shelfService).createShelf(any());
   }
 }
