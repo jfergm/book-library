@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -51,5 +53,11 @@ public class ShelfController {
       .toUri();
     return ResponseEntity.created(location).build();
   }
-  
+
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> updateShelf(@PathVariable Long id, @RequestBody ShelfRequest request) {
+    shelfService.updateShelf(id, request);
+
+    return ResponseEntity.noContent().build();
+  }
 }

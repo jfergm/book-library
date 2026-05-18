@@ -3,10 +3,12 @@ package dev.fer.library.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -106,5 +108,50 @@ public class ShelfControllerTest {
       .andExpect(status().isBadRequest());
     
     verify(shelfService).createShelf(any());
+  }
+
+  @Test
+  void shouldReturnNoContentWhenSuccessUpdate() throws Exception {
+    when(shelfService.updateShelf(anyLong(), any())).thenReturn(shelves.getFirst());
+
+    ShelfRequest shelfRequest = new ShelfRequest("nc", "new code", 1L);
+
+    mockMvc
+      .perform(put("/shelves/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(shelfRequest)))
+      .andExpect(status().isNoContent());
+
+    verify(shelfService).updateShelf(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturn404WhenUpdateInvalidShelf() throws Exception {
+    when(shelfService.updateShelf(anyLong(), any())).thenThrow(ShelfNotFoundException.class);
+
+    ShelfRequest shelfRequest = new ShelfRequest("nc", "new code", 1L);
+
+    mockMvc
+      .perform(put("/shelves/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(shelfRequest)))
+      .andExpect(status().isNotFound());
+
+    verify(shelfService).updateShelf(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturn400WhenUpdateWithInvalidBookcase() throws Exception {
+    when(shelfService.updateShelf(anyLong(), any())).thenThrow(BadRequestException.class);
+
+    ShelfRequest shelfRequest = new ShelfRequest("nc", "new code", 1L);
+
+    mockMvc
+      .perform(put("/shelves/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(shelfRequest)))
+      .andExpect(status().isBadRequest());
+
+    verify(shelfService).updateShelf(anyLong(), any());
   }
 }

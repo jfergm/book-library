@@ -55,4 +55,26 @@ public class ShelfService {
 
     return shelfMapper.toResponse(shelfRepository.save(shelf));
   }
+
+  public ShelfResponse updateShelf(Long id, ShelfRequest request) {
+    Optional<Shelf> shelfOptional = shelfRepository.findById(id);
+    if (shelfOptional.isEmpty()) {
+      throw new ShelfNotFoundException();
+    }
+    Shelf shelf = shelfOptional.get();
+    Optional<Bookcase> bookcase;
+    bookcase = Optional.of(shelf.getBookcase());
+    
+    if (shelf.getBookcase().getId() != request.bookcaseId()) {
+      bookcase = bookcaseRepository.findById(request.bookcaseId());
+    }
+    
+    if (bookcase.isEmpty()) {
+      throw new BadRequestException();
+    }
+
+    Shelf updated = new Shelf(shelf.getId(), request.code(), request.label(),  bookcase.get());
+
+    return shelfMapper.toResponse(shelfRepository.save(updated));
+  }
 }

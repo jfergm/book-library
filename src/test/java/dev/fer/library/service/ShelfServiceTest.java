@@ -119,4 +119,66 @@ public class ShelfServiceTest {
     verify(bookcaseRepository).findById(anyLong());
   }
 
+  @Test
+  void shouldUpdateShelf() {
+    when(shelfRepository.findById(1L)).thenReturn(Optional.of(shelves.getFirst()));
+    when(shelfRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    ShelfRequest update = new ShelfRequest("NC", "New code", 1L);
+
+    ShelfResponse shelf = shelfService.updateShelf(1L, update);
+
+    assertThat(shelf.code()).isEqualTo("NC");
+    assertThat(shelf.label()).isEqualTo("New code");
+    assertThat(shelf.id()).isEqualTo(1L);
+    assertThat(shelf.bookcaseId()).isEqualTo(1L);
+
+    verify(shelfRepository).findById(1L);
+    verify(shelfRepository).save(any(Shelf.class));
+  }
+
+  @Test
+  void shouldFindBookcaseWhenUpdateWithNewBookcase() {
+    when(shelfRepository.findById(1L)).thenReturn(Optional.of(shelves.getFirst()));
+    when(bookcaseRepository.findById(anyLong())).thenReturn(Optional.of(
+      new Bookcase(3L, null, null, null)
+    ));
+    when(shelfRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    ShelfRequest update = new ShelfRequest("NC", "New code", 3L);
+
+    ShelfResponse shelf = shelfService.updateShelf(1L, update);
+
+    assertThat(shelf.bookcaseId()).isEqualTo(3L);
+
+    verify(shelfRepository).findById(1L);
+    verify(bookcaseRepository).findById(3L);
+    verify(shelfRepository).save(any(Shelf.class));
+  }
+
+  @Test
+  void shouldThrowNotFoundWhenUpdateInvalidShelf() {
+    when(shelfRepository.findById(1L)).thenReturn(Optional.empty());
+
+    ShelfRequest update = new ShelfRequest("NC", "New code", 1L);
+
+    assertThrows(ShelfNotFoundException.class, () ->  shelfService.updateShelf(1L, update));
+
+    verify(shelfRepository).findById(1L);
+    verify(shelfRepository, times(0)).save(any(Shelf.class));
+  }
+
+  @Test
+  void shouldThrowBadRequestWhenUpdateWithInvalidBookcase() {
+    when(shelfRepository.findById(1L)).thenReturn(Optional.of(shelves.getFirst()));
+    when(bookcaseRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    ShelfRequest update = new ShelfRequest("NC", "New code", 3L);
+
+    assertThrows(BadRequestException.class, () ->  shelfService.updateShelf(1L, update));
+
+    verify(shelfRepository).findById(1L);
+    verify(shelfRepository).findById(1L);
+    verify(shelfRepository, times(0)).save(any(Shelf.class));
+  }
 }
