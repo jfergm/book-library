@@ -1,5 +1,6 @@
 package dev.fer.library.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -10,11 +11,15 @@ import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.exception.AuthorNotFoundException;
 import dev.fer.library.service.AuthorService;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @WebMvcTest(AuthorController.class)
 public class AuthorControllerTest {
@@ -24,9 +29,20 @@ public class AuthorControllerTest {
   @MockitoBean
   AuthorService authorService;
 
+  private List<AuthorResponse> authors;
+
+  @BeforeEach
+  void setUp() {
+    authors = new ArrayList<>();
+
+    authors.add(new AuthorResponse(1L, "Rainbow Rowell"));
+    authors.add(new AuthorResponse(2L, "Haruki Murakami"));
+    authors.add(new AuthorResponse(3L, "Julio Cortazar"));
+  }
+
   @Test
   void shouldReturnAuthor() throws Exception {
-    when(authorService.getAuthor(1L)).thenReturn(new AuthorResponse(1L, "Rainbow Rowell"));
+    when(authorService.getAuthor(1L)).thenReturn(authors.getFirst());
 
     mockMvc.perform(get("/authors/1"))
       .andExpect(status().isOk())
@@ -44,5 +60,16 @@ public class AuthorControllerTest {
       .andExpect(status().isNotFound());
 
     verify(authorService).getAuthor(1L);
+  }
+
+  @Test
+  void shouldReturnAuthorList() throws Exception {
+    when(authorService.getAuthors()).thenReturn(authors);
+
+    mockMvc.perform(get("/authors"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", hasSize(3)));
+    
+    verify(authorService).getAuthors();
   }
 }

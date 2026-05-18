@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.service.AuthorService;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,11 @@ public class AuthorController {
   public ResponseEntity<AuthorResponse> getBook(@PathVariable Long id) {
     AuthorResponse author = authorService.getAuthor(id);
     return ResponseEntity.ok(author);
+  }
+
+  @GetMapping("")
+  public ResponseEntity<List<AuthorResponse>> getAuthors() {
+    return ResponseEntity.ok(authorService.getAuthors());
   }
   
 }

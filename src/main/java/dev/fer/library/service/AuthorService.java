@@ -1,6 +1,8 @@
 package dev.fer.library.service;
 
 import dev.fer.library.mapper.AuthorMapper;
+
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -29,5 +31,9 @@ public class AuthorService {
     }
 
     return authorMapper.toResponse(author.get());
+  }
+
+  public List<AuthorResponse> getAuthors() {
+    return authorMapper.toResponseList((List<Author>) authorRepository.findAll());
   }
 }

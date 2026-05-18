@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,16 +30,22 @@ public class AuthorServiceTest {
 
   AuthorMapper authorMapper = new AuthorMapper();
 
+  List<Author> authors;
+
   @BeforeEach
   void setUp() {
     authorService = new AuthorService(authorRepository, authorMapper);
+
+    authors = new ArrayList<>();
+
+    authors.add(new Author(1L, "Rainbow Rowell"));
+    authors.add(new Author(2L, "Haruki Murakami"));
+    authors.add(new Author(3L, "Julio Cortazar"));
   }
 
   @Test
   void shouldReturnAuthor() {
-    when(authorRepository.findById(1L)).thenReturn(
-      Optional.of(new Author(1L, "Rainbow Rowell"))
-    );
+    when(authorRepository.findById(1L)).thenReturn(Optional.of(authors.getFirst()));
 
     AuthorResponse author = authorService.getAuthor(1L);
 
@@ -53,5 +61,19 @@ public class AuthorServiceTest {
 
     assertThrows(AuthorNotFoundException.class, () -> authorService.getAuthor(1L));
     verify(authorRepository).findById(1L);
+  }
+
+  @Test
+  void shouldReturnAuthorList() {
+    when(authorRepository.findAll()).thenReturn(authors);
+
+    List<AuthorResponse> authorsList = authorService.getAuthors();
+    
+    assertThat(authorsList.size()).isEqualTo(3);
+    assertThat(authorsList.get(0).id()).isEqualTo(1L);
+    assertThat(authorsList.get(1).id()).isEqualTo(2L);
+    assertThat(authorsList.get(2).id()).isEqualTo(3L);
+    
+    verify(authorRepository).findAll();
   }
 }
