@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -180,5 +181,24 @@ public class ShelfServiceTest {
     verify(shelfRepository).findById(1L);
     verify(shelfRepository).findById(1L);
     verify(shelfRepository, times(0)).save(any(Shelf.class));
+  }
+
+  @Test
+  void shouldDeleteShelf() {
+    when(shelfRepository.existsById(1L)).thenReturn(true);
+    doNothing().when(shelfRepository).deleteById(1L);
+    shelfService.deleteShelf(1L);
+
+    verify(shelfRepository).existsById(1L);
+    verify(shelfRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenDeletingInvalidShelf() {
+    when(shelfRepository.existsById(1L)).thenReturn(false);
+    assertThrows(ShelfNotFoundException.class, () -> shelfService.deleteShelf(1L));
+
+    verify(shelfRepository).existsById(1L);
+    verify(shelfRepository, times(0)).deleteById(1L);
   }
 }

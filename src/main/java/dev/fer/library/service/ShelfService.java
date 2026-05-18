@@ -77,4 +77,13 @@ public class ShelfService {
 
     return shelfMapper.toResponse(shelfRepository.save(updated));
   }
+
+  public void deleteShelf(Long id) {
+    if (shelfRepository.existsById(id)) {
+      shelfRepository.deleteById(id);
+      return;    
+    }
+
+    throw new ShelfNotFoundException();
+  }
 }

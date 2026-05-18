@@ -4,8 +4,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -153,5 +156,21 @@ public class ShelfControllerTest {
       .andExpect(status().isBadRequest());
 
     verify(shelfService).updateShelf(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnOkWhenSuccessDelte() throws Exception {
+    doNothing().when(shelfService).deleteShelf(1L);
+
+    mockMvc.perform(delete("/shelves/1"))
+      .andExpect(status().isOk());
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenDeleteInvalidShelf() throws Exception {
+    doThrow(ShelfNotFoundException.class).when(shelfService).deleteShelf(1L);
+
+    mockMvc.perform(delete("/shelves/1"))
+      .andExpect(status().isNotFound());
   }
 }
