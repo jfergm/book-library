@@ -17,10 +17,12 @@ import dev.fer.library.utils.TestUtils;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,5 +93,37 @@ public class AuthorControllerTest {
       .andExpect(header().string("Location", containsString("/authors/1")));
 
     verify(authorService).createAuthor(any());
+  }
+
+  @Test
+  void shouldReturnNoContentWhenUpdateAuthor() throws Exception {
+    when(authorService.updateAuthor(anyLong(), any())).thenReturn(authors.getFirst());
+
+    AuthorRequest request = new AuthorRequest("New Author name");
+
+    mockMvc
+      .perform(
+        put("/authors/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNoContent());
+    
+    verify(authorService).updateAuthor(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenUpdateInvalidAuthor() throws Exception {
+    when(authorService.updateAuthor(anyLong(), any())).thenThrow(AuthorNotFoundException.class);
+
+    AuthorRequest request = new AuthorRequest("New Author name");
+
+    mockMvc
+      .perform(
+        put("/authors/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNotFound());
+    
+    verify(authorService).updateAuthor(anyLong(), any());
   }
 }

@@ -3,6 +3,8 @@ package dev.fer.library.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,5 +90,32 @@ public class AuthorServiceTest {
     assertThat(created.id()).isNotNull();
     assertThat(created.name()).isEqualTo("Rainbow Rowell");
     verify(authorRepository).save(any());
+  }
+
+  @Test
+  void shouldUpdateAuthor() {
+    when(authorRepository.findById(1L)).thenReturn(Optional.of(authors.getFirst()));
+    when(authorRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    AuthorRequest request = new AuthorRequest("New author name");
+
+    AuthorResponse updated = authorService.updateAuthor(1L, request);
+
+    assertThat(updated.id()).isEqualTo(1L);
+    assertThat(updated.name()).isEqualTo("New author name");
+
+    verify(authorRepository).findById(anyLong());
+    verify(authorRepository).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenUpdateInvalidAuthor() {
+    when(authorRepository.findById(1L)).thenReturn(Optional.empty());
+
+    AuthorRequest request = new AuthorRequest("New author name");
+
+    assertThrows(AuthorNotFoundException.class, () -> authorService.updateAuthor(1L, request));
+    verify(authorRepository).findById(anyLong());
+    verify(authorRepository, times(0)).save(any());
   }
 }

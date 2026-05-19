@@ -43,4 +43,16 @@ public class AuthorService {
 
     return authorMapper.toResponse(authorRepository.save(author));
   }
+
+  public AuthorResponse updateAuthor(Long id, AuthorRequest request) {
+    Optional<Author> author = authorRepository.findById(id);
+
+    if (author.isEmpty()) {
+      throw new AuthorNotFoundException();
+    }
+
+    Author updated = new Author(author.get().getId(), request.name());
+
+    return authorMapper.toResponse(authorRepository.save(updated));
+  }
 }

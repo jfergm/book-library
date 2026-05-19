@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -51,5 +53,11 @@ public class AuthorController {
     return ResponseEntity.created(location).build();
   }
   
-  
+
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> updateAuthor(@PathVariable Long id, @RequestBody AuthorRequest request) {
+    authorService.updateAuthor(id, request);
+
+    return ResponseEntity.noContent().build();
+  }
 }
