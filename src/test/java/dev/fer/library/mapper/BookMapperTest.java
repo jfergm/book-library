@@ -2,6 +2,9 @@ package dev.fer.library.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import dev.fer.library.dto.response.BookResponse;
@@ -22,5 +25,20 @@ public class BookMapperTest {
     assertThat(mapped.isbn()).isEqualTo("ISBN123");
     assertThat(mapped.authorId()).isEqualTo(1L);
 
+  }
+
+  @Test
+  void shoouldConvertToResponseList() {
+    List<Book> books = new ArrayList<>();
+
+    books.add(new Book(1L, "Eleanor & Park", "ISBN123", new Author(1L, null)));
+    books.add(new Book(2L, "Kafka On The Shore", "ISBN456", new Author(2L, null)));
+    books.add(new Book(3L, "Another Book", "ISBN789", new Author(3L, null)));
+
+    List<BookResponse> responseList = mapper.toResponseList(books);
+
+    assertThat(responseList.get(0).title()).isEqualTo("Eleanor & Park");
+    assertThat(responseList.get(1).title()).isEqualTo("Kafka On The Shore");
+    assertThat(responseList.get(2).title()).isEqualTo("Another Book");
   }
 }

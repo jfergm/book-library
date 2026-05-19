@@ -1,5 +1,7 @@
 package dev.fer.library.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,7 +11,6 @@ import dev.fer.library.service.BookService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
 
 @RestController
 @RequestMapping("/books")
@@ -26,4 +27,10 @@ public class BookController {
     BookResponse response = bookService.getBook(id);
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("")
+  public ResponseEntity<List<BookResponse>> getBooks() {
+    return ResponseEntity.ok(bookService.getBooks());
+  }
+  
 }
