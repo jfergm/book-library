@@ -2,6 +2,7 @@ package dev.fer.library.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.entity.Author;
 import dev.fer.library.exception.AuthorNotFoundException;
@@ -75,5 +77,16 @@ public class AuthorServiceTest {
     assertThat(authorsList.get(2).id()).isEqualTo(3L);
     
     verify(authorRepository).findAll();
+  }
+
+  @Test
+  void shouldCreateAuthor() {
+    when(authorRepository.save(any())).thenReturn(authors.getFirst());
+    AuthorRequest request = new AuthorRequest("Rainbow Rowell");
+    AuthorResponse created = authorService.createAuthor(request);
+
+    assertThat(created.id()).isNotNull();
+    assertThat(created.name()).isEqualTo("Rainbow Rowell");
+    verify(authorRepository).save(any());
   }
 }

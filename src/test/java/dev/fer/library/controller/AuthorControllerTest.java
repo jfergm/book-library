@@ -4,17 +4,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.exception.AuthorNotFoundException;
 import dev.fer.library.service.AuthorService;
+import dev.fer.library.utils.TestUtils;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,5 +78,18 @@ public class AuthorControllerTest {
       .andExpect(jsonPath("$", hasSize(3)));
     
     verify(authorService).getAuthors();
+  }
+
+  @Test
+  void shouldReturnCreatedAndLocation() throws Exception {
+    when(authorService.createAuthor(any())).thenReturn(authors.getFirst());
+
+    AuthorRequest request = new AuthorRequest("Rowell Rainbow");
+
+    mockMvc.perform(post("/authors").contentType(MediaType.APPLICATION_JSON).content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isCreated())
+      .andExpect(header().string("Location", containsString("/authors/1")));
+
+    verify(authorService).createAuthor(any());
   }
 }

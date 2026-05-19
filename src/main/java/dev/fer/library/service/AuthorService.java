@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.entity.Author;
 import dev.fer.library.exception.AuthorNotFoundException;
@@ -35,5 +36,11 @@ public class AuthorService {
 
   public List<AuthorResponse> getAuthors() {
     return authorMapper.toResponseList((List<Author>) authorRepository.findAll());
+  }
+
+  public AuthorResponse createAuthor(AuthorRequest request) {
+    Author author = authorMapper.toEntity(request);
+
+    return authorMapper.toResponse(authorRepository.save(author));
   }
 }

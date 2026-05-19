@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.entity.Author;
 
@@ -16,5 +17,9 @@ public class AuthorMapper {
 
   public List<AuthorResponse> toResponseList(List<Author> authors) {
     return authors.stream().map(this::toResponse).toList();
+  }
+
+  public Author toEntity(AuthorRequest request) {
+    return new Author(null, request.name());
   }
 }

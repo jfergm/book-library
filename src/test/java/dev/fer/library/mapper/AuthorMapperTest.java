@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.entity.Author;
 
@@ -42,5 +43,15 @@ public class AuthorMapperTest {
     assertThat(responseList.get(0).id()).isEqualTo(1L);
     assertThat(responseList.get(1).id()).isEqualTo(2L);
     assertThat(responseList.get(2).id()).isEqualTo(3L);
+  }
+
+  @Test
+  void shouldConvertRequestToEntity() {
+    AuthorRequest request = new AuthorRequest("Author name");
+
+    Author author = mapper.toEntity(request);
+
+    assertThat(author.getId()).isNull();
+    assertThat(author.getName()).isEqualTo("Author name");
   }
 }
