@@ -55,4 +55,13 @@ public class AuthorService {
 
     return authorMapper.toResponse(authorRepository.save(updated));
   }
+
+  public void deleteAuthor(Long id) {
+    if (authorRepository.existsById(id)) {
+      authorRepository.deleteById(id);
+      return;
+    }
+
+    throw new AuthorNotFoundException();
+  }
 }

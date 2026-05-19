@@ -118,4 +118,24 @@ public class AuthorServiceTest {
     verify(authorRepository).findById(anyLong());
     verify(authorRepository, times(0)).save(any());
   }
+
+  @Test
+  void shouldDeleteAuthor() {
+    when(authorRepository.existsById(1L)).thenReturn(true);
+
+    authorService.deleteAuthor(1L);
+
+    verify(authorRepository).existsById(1L);
+    verify(authorRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenDeleteInvalidAuthor() {
+    when(authorRepository.existsById(1L)).thenReturn(false);
+
+    assertThrows(AuthorNotFoundException.class, () -> authorService.deleteAuthor(1L));
+
+    verify(authorRepository).existsById(1L);
+    verify(authorRepository, times(0)).deleteById(1L);
+  }
 }
