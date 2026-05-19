@@ -1,6 +1,7 @@
 package dev.fer.library.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import dev.fer.library.dto.request.ShelfRequest;
 import dev.fer.library.dto.response.ShelfResponse;
 import dev.fer.library.entity.Bookcase;
 import dev.fer.library.entity.Shelf;
+import dev.fer.library.exception.BadRequestException;
 
 public class ShelfMapperTest {
   ShelfMapper mapper = new ShelfMapper();
@@ -61,5 +63,13 @@ public class ShelfMapperTest {
     assertThat(shelf.getCode()).isEqualTo("A1");
     assertThat(shelf.getLabel()).isEqualTo("Shelf A1");
     assertThat(shelf.getBookcase().getId()).isEqualTo(1L);
+  }
+
+  @Test
+  void shouldThrowWhenInvalidBookcase() {
+    ShelfRequest request = new ShelfRequest("A1", "Shelf A1", 2L);
+    Bookcase bookcase = new Bookcase(1L, null, null, null);
+
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, bookcase));
   }
 }
