@@ -78,4 +78,13 @@ public class BookService {
 
     return bookMapper.toResponse(bookRepository.save(updated));
   }
+
+  public void deleteBook(Long id) {
+    if (bookRepository.existsById(id)) {
+      bookRepository.deleteById(id);
+      return;
+    }
+
+    throw new BookNotFoundException();
+  }
 }

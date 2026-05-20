@@ -4,8 +4,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -160,5 +163,25 @@ public class BookControllerTest {
       .andExpect(status().isBadRequest());
 
     verify(bookService).updateBook(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnOkWhenDeleteBook() throws Exception {
+    doNothing().when(bookService).deleteBook(1L);
+
+    mockMvc.perform(delete("/books/1"))
+      .andExpect(status().isOk());
+    
+    verify(bookService).deleteBook(1L);
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenDeleteInvalidBook() throws Exception {
+    doThrow(BookNotFoundException.class).when(bookService).deleteBook(1L);
+
+    mockMvc.perform(delete("/books/1"))
+      .andExpect(status().isNotFound());
+    
+    verify(bookService).deleteBook(1L);
   }
 }
