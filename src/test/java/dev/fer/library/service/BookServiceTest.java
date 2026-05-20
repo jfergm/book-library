@@ -2,6 +2,8 @@ package dev.fer.library.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,11 +17,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.fer.library.dto.request.BookRequest;
 import dev.fer.library.dto.response.BookResponse;
 import dev.fer.library.entity.Author;
 import dev.fer.library.entity.Book;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.BookNotFoundException;
 import dev.fer.library.mapper.BookMapper;
+import dev.fer.library.repository.AuthorRepository;
 import dev.fer.library.repository.BookRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,13 +34,16 @@ public class BookServiceTest {
   @Mock
   BookRepository bookRepository;
 
+  @Mock
+  AuthorRepository authorRepository;
+
   BookMapper bookMapper = new BookMapper();
 
   private List<Book> books = new ArrayList<>();
 
   @BeforeEach
   void setUp() {
-    bookService = new BookService(bookRepository, bookMapper);
+    bookService = new BookService(bookRepository, bookMapper, authorRepository);
 
     books = new ArrayList<>();
 
@@ -76,6 +84,36 @@ public class BookServiceTest {
     assertThat(books.size()).isEqualTo(3);
 
     verify(bookRepository).findAll();
+  }
+
+  @Test
+  void shouldCreateBoook() {
+    when(bookRepository.save(any())).thenReturn(books.getFirst());
+    when(authorRepository.findById(1L)).thenReturn(Optional.of(new Author(1L, null)));
+
+    BookRequest request = new BookRequest("Eleanor & Park", "ISBN123", 1L);
+
+    BookResponse created = bookService.createBook(request);
+
+    assertThat(created.id()).isNotNull();
+    assertThat(created.title()).isEqualTo(request.title());
+    assertThat(created.isbn()).isEqualTo(request.isbn());
+    assertThat(created.authorId()).isEqualTo(request.authorId());
+
+    verify(bookRepository).save(any());
+    verify(authorRepository).findById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenCreateBoookWithInvalidAuthor() {
+    when(authorRepository.findById(1L)).thenReturn(Optional.empty());
+
+    BookRequest request = new BookRequest("Eleanor & Park", "ISBN123", 1L);
+
+    assertThrows(BadRequestException.class, () -> bookService.createBook(request));
+
+    verify(bookRepository, times(0)).save(any());
+    verify(authorRepository).findById(1L);
   }
 
 }
