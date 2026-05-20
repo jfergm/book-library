@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -114,6 +115,73 @@ public class BookServiceTest {
 
     verify(bookRepository, times(0)).save(any());
     verify(authorRepository).findById(1L);
+  }
+
+  @Test
+  void shouldUpdateBook() {
+    when(bookRepository.findById(1L)).thenReturn(Optional.of(books.getFirst()));
+    when(bookRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    BookRequest request = new BookRequest("New title", "NEWISBN", 1L);
+
+    BookResponse response = bookService.updateBook(1L, request);
+
+    assertThat(response.id()).isEqualTo(1L);
+    assertThat(response.title()).isEqualTo("New title");
+    assertThat(response.isbn()).isEqualTo("NEWISBN");
+    assertThat(response.authorId()).isEqualTo(1L);
+
+    verify(bookRepository).save(any());
+    verify(bookRepository).findById(anyLong());
+  }
+
+  @Test
+  void shouldUpdateBookWithDifferentAuthor() {
+    when(bookRepository.findById(1L)).thenReturn(Optional.of(books.getFirst()));
+    when(authorRepository.findById(2L)).thenReturn(
+      Optional.of(new Author(2L, null))
+    );
+    when(bookRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    BookRequest request = new BookRequest("New title", "NEWISBN", 2L);
+
+    BookResponse response = bookService.updateBook(1L, request);
+
+    assertThat(response.id()).isEqualTo(1L);
+    assertThat(response.title()).isEqualTo("New title");
+    assertThat(response.isbn()).isEqualTo("NEWISBN");
+    assertThat(response.authorId()).isEqualTo(2L);
+
+    verify(bookRepository).save(any());
+    verify(bookRepository).findById(anyLong());
+    verify(authorRepository).findById(anyLong());
+  }
+
+  @Test
+  void shouldThrowNotFoundWhenUpdateInvalidBook() {
+    when(bookRepository.findById(1L)).thenReturn(Optional.empty());
+
+    BookRequest request = new BookRequest("New title", "NEWISBN", 1L);
+
+    assertThrows(BookNotFoundException.class, () ->  bookService.updateBook(1L, request));
+
+    verify(bookRepository, times(0)).save(any());
+    verify(bookRepository).findById(anyLong());
+    verify(authorRepository, times(0)).findById(anyLong());
+  }
+
+  @Test
+  void shouldThrowNotFoundWhenUpdateBookWithInvalidAuthor() {
+    when(bookRepository.findById(1L)).thenReturn(Optional.of(books.getFirst()));
+    when(authorRepository.findById(2L)).thenReturn(Optional.empty());
+
+    BookRequest request = new BookRequest("New title", "NEWISBN", 2L);
+
+    assertThrows(BadRequestException.class, () ->  bookService.updateBook(1L, request));
+
+    verify(bookRepository, times(0)).save(any());
+    verify(bookRepository).findById(anyLong());
+    verify(authorRepository).findById(anyLong());
   }
 
 }

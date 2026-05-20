@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -52,5 +54,11 @@ public class BookController {
     return ResponseEntity.created(location).build();
   }
   
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> updateBook(@PathVariable Long id, @RequestBody BookRequest request) {
+    bookService.updateBook(id, request);
+
+    return ResponseEntity.noContent().build();
+  }
   
 }

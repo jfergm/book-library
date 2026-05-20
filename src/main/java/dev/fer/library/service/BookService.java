@@ -55,4 +55,27 @@ public class BookService {
 
     return bookMapper.toResponse(bookRepository.save(book));
   }
+
+  public BookResponse updateBook(Long id, BookRequest request) {
+    Optional<Book> bookOptional = bookRepository.findById(id);
+
+    if (bookOptional.isEmpty()) {
+      throw new BookNotFoundException();
+    }
+
+    Book book = bookOptional.get();
+    Optional<Author> author = Optional.of(book.getAuthor());
+
+    if (book.getAuthor().getId() != request.authorId()) {
+      author = authorRepository.findById(request.authorId());
+    }
+
+    if (author.isEmpty()) {
+      throw new BadRequestException();
+    }
+
+    Book updated = new Book(book.getId(), request.title(), request.isbn(), author.get());
+
+    return bookMapper.toResponse(bookRepository.save(updated));
+  }
 }

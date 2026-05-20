@@ -3,10 +3,12 @@ package dev.fer.library.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -110,5 +112,53 @@ public class BookControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(TestUtils.objectAsJson(bookRequest)))
       .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void shouldReturnNoContentWhenUpdateBook() throws Exception {
+    when(bookService.updateBook(any(), any())).thenReturn(books.getFirst());
+    
+    BookRequest request = new BookRequest("New title", "NEWISBN", 1L);
+    
+    mockMvc
+      .perform(
+        put("/books/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNoContent());
+
+    verify(bookService).updateBook(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenUpdateInvalidBook() throws Exception {
+    when(bookService.updateBook(any(), any())).thenThrow(BookNotFoundException.class);
+    
+    BookRequest request = new BookRequest("New title", "NEWISBN", 1L);
+    
+    mockMvc
+      .perform(
+        put("/books/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNotFound());
+
+    verify(bookService).updateBook(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateInvalidBook() throws Exception {
+    when(bookService.updateBook(any(), any())).thenThrow(BadRequestException.class);
+    
+    BookRequest request = new BookRequest("New title", "NEWISBN", 1L);
+    
+    mockMvc
+      .perform(
+        put("/books/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
+
+    verify(bookService).updateBook(anyLong(), any());
   }
 }
