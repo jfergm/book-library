@@ -2,9 +2,11 @@ package dev.fer.library.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -18,6 +20,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import dev.fer.library.dto.request.BookCopyRequest;
+import dev.fer.library.dto.request.BookCopyUpdateRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.enums.BookCopyStatus;
 import dev.fer.library.exception.BadRequestException;
@@ -89,5 +92,37 @@ public class BookCopyControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(TestUtils.objectAsJson(request)))
       .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void shouldReturnNoContentWhenUpdateBookCopy() throws Exception {
+    when(bookCopyService.updateBookCopy(any(), any())).thenReturn(bookCopy);
+
+    BookCopyUpdateRequest request = new BookCopyUpdateRequest("BKNWCODE123");
+
+    mockMvc
+      .perform(
+        patch("/book-copies/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNoContent());
+
+    verify(bookCopyService).updateBookCopy(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenUpdateInvalidBookCopy() throws Exception {
+    when(bookCopyService.updateBookCopy(any(), any())).thenThrow(BookCopyNotFoundException.class);
+
+    BookCopyUpdateRequest request = new BookCopyUpdateRequest("BKNWCODE123");
+
+    mockMvc
+      .perform(
+        patch("/book-copies/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNotFound());
+
+    verify(bookCopyService).updateBookCopy(anyLong(), any());
   }
 }

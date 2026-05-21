@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.BookCopyRequest;
+import dev.fer.library.dto.request.BookCopyUpdateRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.entity.Book;
 import dev.fer.library.entity.BookCopy;
@@ -49,5 +50,17 @@ public class BookCopyService {
     BookCopy bookCopy = bookCopyMapper.toEntity(request, book.get());
 
     return bookCopyMapper.toResponse(bookCopyRepository.save(bookCopy));
+  }
+
+  public BookCopyResponse updateBookCopy(Long id, BookCopyUpdateRequest request) {
+    Optional<BookCopy> bookCopy = bookCopyRepository.findById(id);
+
+    if (bookCopy.isEmpty()) {
+      throw new BookCopyNotFoundException();
+    }
+
+    BookCopy updated = bookCopyMapper.toUpdateEntity(bookCopy.get(), request);
+
+    return bookCopyMapper.toResponse(bookCopyRepository.save(updated));
   }
 }

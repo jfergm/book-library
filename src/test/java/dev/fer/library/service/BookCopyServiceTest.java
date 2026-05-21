@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.fer.library.dto.request.BookCopyRequest;
+import dev.fer.library.dto.request.BookCopyUpdateRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.entity.Book;
 import dev.fer.library.entity.BookCopy;
@@ -40,6 +41,14 @@ public class BookCopyServiceTest {
   
   private BookCopyService bookCopyService;
 
+  private BookCopy bookCopy = new BookCopy(
+    1L,
+    new Book(1L, null, null, null),
+    new Shelf(1L, null, null, null),
+    "BK123",
+    BookCopyStatus.AVAILABLE
+  );
+
   @BeforeEach
   void setUp() {
     bookCopyService = new BookCopyService(bookCopyRepository, bookCopyMapper, bookRepository);
@@ -48,13 +57,7 @@ public class BookCopyServiceTest {
   @Test
   void shouldReturnBookCopy() {
     when(bookCopyRepository.findById(1L)).thenReturn(
-      Optional.of(new BookCopy(
-        1L,
-        new Book(1L, null, null, null),
-        new Shelf(1L, null, null, null),
-        "BK123",
-        BookCopyStatus.AVAILABLE
-      ))
+      Optional.of(bookCopy)
     );
 
     BookCopyResponse bookCopy = bookCopyService.getBookCopy(1L);
@@ -115,5 +118,35 @@ public class BookCopyServiceTest {
     
     verify(bookRepository).findById(1L);
     verify(bookCopyRepository, times(0)).save(any());
+  }
+
+  @Test
+  void shouldUpdateBookCopy() {
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(bookCopy));
+    when(bookCopyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+    
+    BookCopyUpdateRequest request = new BookCopyUpdateRequest("NEWCODE");
+
+    BookCopyResponse response = bookCopyService.updateBookCopy(1L, request);
+
+    assertThat(response.id()).isEqualTo(1L);
+    assertThat(response.code()).isEqualTo("NEWCODE");
+
+    verify(bookCopyRepository).findById(1L);
+    verify(bookCopyRepository).save(any());
+
+  }
+
+  @Test
+  void shouldThrowWhenUpdateInvalidBookCopy() {
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.empty());
+    
+    BookCopyUpdateRequest request = new BookCopyUpdateRequest("NEWCODE");
+
+    assertThrows(BookCopyNotFoundException.class, () ->  bookCopyService.updateBookCopy(1L, request));
+
+    verify(bookCopyRepository).findById(1L);
+    verify(bookCopyRepository, times(0)).save(any());
+
   }
 }

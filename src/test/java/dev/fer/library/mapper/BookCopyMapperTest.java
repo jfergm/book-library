@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import dev.fer.library.dto.request.BookCopyRequest;
+import dev.fer.library.dto.request.BookCopyUpdateRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.entity.Book;
 import dev.fer.library.entity.BookCopy;
@@ -74,5 +75,26 @@ public class BookCopyMapperTest {
     assertThat(response.bookId()).isNotNull();
     assertThat(response.shelfId()).isNull();
     assertThat(response.code()).isEmpty();
+  }
+
+  @Test
+  void shouldConvterToUpdateEntity() {
+    BookCopy bookCopy =  new BookCopy(
+      1L, 
+      new Book(1L, null, null, null),
+      new Shelf(1L, null, null, null), 
+      "BK123", 
+      BookCopyStatus.AVAILABLE
+    );
+
+    BookCopyUpdateRequest request = new BookCopyUpdateRequest("NEWCODE");
+
+    BookCopy toUpdate = mapper.toUpdateEntity(bookCopy, request);
+
+    assertThat(toUpdate.getId()).isEqualTo(bookCopy.getId());
+    assertThat(toUpdate.getBook()).isEqualTo(bookCopy.getBook());
+    assertThat(toUpdate.getShelf()).isEqualTo(bookCopy.getShelf());
+    assertThat(toUpdate.getStatus()).isEqualTo(bookCopy.getStatus());
+    assertThat(toUpdate.getCode()).isEqualTo(request.code());
   }
 }

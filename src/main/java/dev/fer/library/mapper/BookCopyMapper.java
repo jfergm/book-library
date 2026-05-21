@@ -3,6 +3,7 @@ package dev.fer.library.mapper;
 import org.springframework.stereotype.Component;
 
 import dev.fer.library.dto.request.BookCopyRequest;
+import dev.fer.library.dto.request.BookCopyUpdateRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.entity.Book;
 import dev.fer.library.entity.BookCopy;
@@ -28,6 +29,16 @@ public class BookCopyMapper {
     }
 
     return new BookCopy(null, book, null, "", BookCopyStatus.PROCESSING);
+  }
+
+  public BookCopy toUpdateEntity(BookCopy bookCopy, BookCopyUpdateRequest request) {
+    return new BookCopy(
+      bookCopy.getId(), 
+      bookCopy.getBook(), 
+      bookCopy.getShelf(), 
+      request.code(), 
+      bookCopy.getStatus()
+    );
   }
 }
 
