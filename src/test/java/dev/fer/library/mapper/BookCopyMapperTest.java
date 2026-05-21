@@ -1,14 +1,17 @@
 package dev.fer.library.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import dev.fer.library.dto.request.BookCopyRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.entity.Book;
 import dev.fer.library.entity.BookCopy;
 import dev.fer.library.entity.Shelf;
 import dev.fer.library.enums.BookCopyStatus;
+import dev.fer.library.exception.BadRequestException;
 
 public class BookCopyMapperTest {
   BookCopyMapper mapper = new BookCopyMapper();
@@ -30,5 +33,46 @@ public class BookCopyMapperTest {
     assertThat(response.shelfId()).isEqualTo(1L);
     assertThat(response.code()).isEqualTo("BK123");
     assertThat(response.status()).isEqualTo(BookCopyStatus.AVAILABLE.name());
+  }
+
+  @Test
+  void shouldConvertToEntity() {
+    BookCopyRequest request = new BookCopyRequest(1L);
+    Book book = new Book(1L, null, null, null);
+
+    BookCopy bookCopy = mapper.toEntity(request, book);
+
+    assertThat(bookCopy.getId()).isNull();
+    assertThat(bookCopy.getShelf()).isNull();
+    assertThat(bookCopy.getCode()).isEmpty();
+    assertThat(bookCopy.getBook().getId()).isEqualTo(request.bookId());
+    assertThat(bookCopy.getStatus()).isEqualTo(BookCopyStatus.PROCESSING);
+
+  }
+
+  @Test
+  void shouldThrowWhenConvertToEntityWithInvalidBook() {
+    BookCopyRequest request = new BookCopyRequest(2L);
+    Book book = new Book(1L, null, null, null);
+
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, book));
+  }
+
+  @Test
+  void shouldConvertToResponseWithoutShelf() {
+    BookCopy bookCopy = new BookCopy(
+      1L, 
+      new Book(1L, null, null, null),
+      null, 
+      "", 
+      BookCopyStatus.PROCESSING
+    );
+
+    BookCopyResponse response = mapper.toResponse(bookCopy);
+
+    assertThat(response.id()).isNotNull();
+    assertThat(response.bookId()).isNotNull();
+    assertThat(response.shelfId()).isNull();
+    assertThat(response.code()).isEmpty();
   }
 }
