@@ -217,4 +217,24 @@ public class BookCopyServiceTest {
     verify(shelfRepository).findById(anyLong());
     verify(bookCopyRepository, times(0)).save(any());
   }
+
+  @Test
+  void shouldDeleteBookCopy() {
+    when(bookCopyRepository.existsById(1L)).thenReturn(true);
+
+    bookCopyService.deleteBookCopy(1L);
+
+    verify(bookCopyRepository).existsById(1L);
+    verify(bookCopyRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldThrowWhenDeleteBookCopyWithInvalidBookCopy() {
+    when(bookCopyRepository.existsById(1L)).thenReturn(false);
+
+    assertThrows(BookCopyNotFoundException.class, () -> bookCopyService.deleteBookCopy(1L));
+
+    verify(bookCopyRepository).existsById(1L);
+    verify(bookCopyRepository, times(0)).deleteById(1L);
+  }
 }

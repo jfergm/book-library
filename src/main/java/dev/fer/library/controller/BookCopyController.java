@@ -13,6 +13,7 @@ import dev.fer.library.dto.request.BookCopyUpdateShelfRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.service.BookCopyService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,5 +66,12 @@ public class BookCopyController {
     bookCopyService.updateBookCopyShelf(id, request);
     return ResponseEntity.noContent().build();
   }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteBookCopy(@PathVariable Long id) {
+    bookCopyService.deleteBookCopy(id);
+
+    return ResponseEntity.ok(null);
+  } 
   
 }

@@ -3,8 +3,10 @@ package dev.fer.library.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -174,5 +176,15 @@ public class BookCopyControllerTest {
       .andExpect(status().isBadRequest());
 
     verify(bookCopyService).updateBookCopyShelf(any(), any());
+  }
+
+  @Test
+  void shouldReturnOkWhenDeleteBookCopy() throws Exception {
+    doNothing().when(bookCopyService).deleteBookCopy(1L);
+
+    mockMvc.perform(delete("/book-copies/1"))
+      .andExpect(status().isOk());
+    
+    verify(bookCopyService).deleteBookCopy(1L);
   }
 }

@@ -93,4 +93,13 @@ public class BookCopyService {
     return bookCopyMapper.toResponse(bookCopyRepository.save(updated));
 
   }
+
+  public void deleteBookCopy(Long id) {
+    if (bookCopyRepository.existsById(id)) {
+      bookCopyRepository.deleteById(id);
+      return;
+    }
+
+    throw new BookCopyNotFoundException();
+  }
 }
