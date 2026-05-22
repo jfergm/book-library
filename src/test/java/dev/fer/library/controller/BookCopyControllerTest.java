@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import dev.fer.library.dto.request.BookCopyRequest;
 import dev.fer.library.dto.request.BookCopyUpdateRequest;
+import dev.fer.library.dto.request.BookCopyUpdateShelfRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.enums.BookCopyStatus;
 import dev.fer.library.exception.BadRequestException;
@@ -124,5 +126,53 @@ public class BookCopyControllerTest {
       .andExpect(status().isNotFound());
 
     verify(bookCopyService).updateBookCopy(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnNoContentWhenUpdateBookCopyShelf() throws Exception {
+    when(bookCopyService.updateBookCopyShelf(anyLong(), any())).thenReturn(bookCopy);
+
+    BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(1L);
+
+    mockMvc
+      .perform(
+        put("/book-copies/1/shelf")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNoContent());
+
+    verify(bookCopyService).updateBookCopyShelf(any(), any());
+  }
+
+  @Test
+  void shouldReturnNotFoundWhenUpdateBookCopyShelfWithInvalidBookCopy() throws Exception {
+    when(bookCopyService.updateBookCopyShelf(anyLong(), any())).thenThrow(BookCopyNotFoundException.class);
+
+    BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(1L);
+
+    mockMvc
+      .perform(
+        put("/book-copies/1/shelf")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isNotFound());
+
+    verify(bookCopyService).updateBookCopyShelf(any(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateBookCopyShelfWithInvalidShelf() throws Exception {
+    when(bookCopyService.updateBookCopyShelf(anyLong(), any())).thenThrow(BadRequestException.class);
+
+    BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(1L);
+
+    mockMvc
+      .perform(
+        put("/book-copies/1/shelf")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
+
+    verify(bookCopyService).updateBookCopyShelf(any(), any());
   }
 }

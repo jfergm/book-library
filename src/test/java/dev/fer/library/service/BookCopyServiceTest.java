@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.fer.library.dto.request.BookCopyRequest;
 import dev.fer.library.dto.request.BookCopyUpdateRequest;
+import dev.fer.library.dto.request.BookCopyUpdateShelfRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.entity.Book;
 import dev.fer.library.entity.BookCopy;
@@ -27,6 +29,7 @@ import dev.fer.library.exception.BookCopyNotFoundException;
 import dev.fer.library.mapper.BookCopyMapper;
 import dev.fer.library.repository.BookCopyRepository;
 import dev.fer.library.repository.BookRepository;
+import dev.fer.library.repository.ShelfRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class BookCopyServiceTest {
@@ -36,6 +39,9 @@ public class BookCopyServiceTest {
 
   @Mock
   BookRepository bookRepository;
+
+  @Mock
+  ShelfRepository shelfRepository;
 
   BookCopyMapper bookCopyMapper = new BookCopyMapper();
   
@@ -51,7 +57,7 @@ public class BookCopyServiceTest {
 
   @BeforeEach
   void setUp() {
-    bookCopyService = new BookCopyService(bookCopyRepository, bookCopyMapper, bookRepository);
+    bookCopyService = new BookCopyService(bookCopyRepository, bookCopyMapper, bookRepository, shelfRepository);
   }
 
   @Test
@@ -148,5 +154,67 @@ public class BookCopyServiceTest {
     verify(bookCopyRepository).findById(1L);
     verify(bookCopyRepository, times(0)).save(any());
 
+  }
+
+  @Test
+  void shouldUpdateBookCopyShelf() {
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(bookCopy));
+    when(shelfRepository.findById(2L)).thenReturn(Optional.of(new Shelf(2L, null, null, null)));
+    when(bookCopyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+    
+    BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(2L);
+
+    BookCopyResponse response = bookCopyService.updateBookCopyShelf(1L, request);
+
+    assertThat(response.id()).isEqualTo(1L);
+    assertThat(response.shelfId()).isEqualTo(2L);
+
+    verify(bookCopyRepository).findById(1L);
+    verify(shelfRepository).findById(2L);
+    verify(bookCopyRepository).save(any());
+  }
+
+  @Test
+  void shouldUpdateBookCopyShelfWithNullValue() {
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(bookCopy));
+    when(bookCopyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+    
+    BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(null);
+
+    BookCopyResponse response = bookCopyService.updateBookCopyShelf(1L, request);
+
+    assertThat(response.id()).isEqualTo(1L);
+    assertThat(response.shelfId()).isNull();
+
+    verify(bookCopyRepository).findById(1L);
+    verify(shelfRepository, times(0)).findById(anyLong());
+    verify(bookCopyRepository).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenUpdateBookCopyShelfWithInvalidBookCopy() {
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.empty());
+    
+    BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(null);
+
+    assertThrows(BookCopyNotFoundException.class, () -> bookCopyService.updateBookCopyShelf(1L, request));
+
+    verify(bookCopyRepository).findById(1L);
+    verify(shelfRepository, times(0)).findById(any());
+    verify(bookCopyRepository, times(0)).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenUpdateBookCopyShelfWithInvalidShelf() {
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(bookCopy));
+    when(shelfRepository.findById(anyLong())).thenReturn(Optional.empty());
+    
+    BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(2L);
+
+    assertThrows(BadRequestException.class, () -> bookCopyService.updateBookCopyShelf(1L, request));
+
+    verify(bookCopyRepository).findById(1L);
+    verify(shelfRepository).findById(anyLong());
+    verify(bookCopyRepository, times(0)).save(any());
   }
 }

@@ -4,9 +4,11 @@ import org.springframework.stereotype.Component;
 
 import dev.fer.library.dto.request.BookCopyRequest;
 import dev.fer.library.dto.request.BookCopyUpdateRequest;
+import dev.fer.library.dto.request.BookCopyUpdateShelfRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.entity.Book;
 import dev.fer.library.entity.BookCopy;
+import dev.fer.library.entity.Shelf;
 import dev.fer.library.enums.BookCopyStatus;
 import dev.fer.library.exception.BadRequestException;
 
@@ -37,6 +39,28 @@ public class BookCopyMapper {
       bookCopy.getBook(), 
       bookCopy.getShelf(), 
       request.code(), 
+      bookCopy.getStatus()
+    );
+  }
+
+  public BookCopy toUpdateShelfEntity(BookCopyUpdateShelfRequest request, BookCopy bookCopy, Shelf shelf) {
+
+    if (
+      (request.shelfId() == null && shelf != null) ||
+      (request.shelfId() != null && shelf == null)
+    ) {
+      throw new BadRequestException();
+    }
+
+    if (shelf != null && request.shelfId() != shelf.getId()) {
+      throw new BadRequestException();
+    }
+
+    return new BookCopy(
+      bookCopy.getId(), 
+      bookCopy.getBook(), 
+      shelf, 
+      bookCopy.getCode(), 
       bookCopy.getStatus()
     );
   }
