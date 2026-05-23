@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,12 +28,14 @@ import dev.fer.library.dto.request.FloorUpdateRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.FloorNotFoundException;
+import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.FloorService;
 import dev.fer.library.utils.TestUtils;
 
 import static org.hamcrest.Matchers.*;
 
 @WebMvcTest(FloorController.class)
+@Import(SecurityConfig.class)
 public class FloorControllerTest {
   @Autowired
   MockMvc mockMvc;

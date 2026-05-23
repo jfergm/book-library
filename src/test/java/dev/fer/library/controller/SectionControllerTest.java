@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,10 +29,12 @@ import dev.fer.library.dto.request.SectionRequest;
 import dev.fer.library.dto.response.SectionResponse;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.SectionNotFoundException;
+import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.SectionService;
 import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(SectionController.class)
+@Import(SecurityConfig.class)
 public class SectionControllerTest {
   @Autowired
   MockMvc mockMvc;

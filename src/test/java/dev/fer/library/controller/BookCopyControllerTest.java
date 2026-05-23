@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,10 +30,12 @@ import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.enums.BookCopyStatus;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.BookCopyNotFoundException;
+import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.BookCopyService;
 import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(BookCopyController.class)
+@Import(SecurityConfig.class)
 public class BookCopyControllerTest {
   @Autowired
   MockMvc mockMvc;
