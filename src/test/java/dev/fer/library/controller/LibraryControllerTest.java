@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import dev.fer.library.dto.request.LibraryRequest;
 import dev.fer.library.dto.response.LibraryResponse;
 import dev.fer.library.exception.LibraryNotFoundException;
+import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.LibraryService;
 import dev.fer.library.utils.TestUtils;
@@ -39,6 +40,9 @@ public class LibraryControllerTest {
 
   @MockitoBean
   LibraryService libraryService;
+
+  @MockitoBean
+  CustomUserDetailsService customUserDetailsService;
 
   private List<LibraryResponse> libraries;
 

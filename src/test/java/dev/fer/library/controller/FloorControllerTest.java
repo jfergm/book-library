@@ -28,6 +28,7 @@ import dev.fer.library.dto.request.FloorUpdateRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.FloorNotFoundException;
+import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.FloorService;
 import dev.fer.library.utils.TestUtils;
@@ -42,6 +43,9 @@ public class FloorControllerTest {
 
   @MockitoBean
   FloorService floorService;
+
+  @MockitoBean
+  CustomUserDetailsService customUserDetailsService;
 
   private List<FloorResponse> floors;
 

@@ -32,6 +32,7 @@ import dev.fer.library.dto.request.BookRequest;
 import dev.fer.library.dto.response.BookResponse;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.BookNotFoundException;
+import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.BookService;
 import dev.fer.library.utils.TestUtils;
@@ -44,6 +45,9 @@ public class BookControllerTest {
 
   @MockitoBean
   BookService bookService;
+  
+  @MockitoBean
+  CustomUserDetailsService customUserDetailsService;
 
   List<BookResponse> books;
 

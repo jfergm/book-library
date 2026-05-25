@@ -30,6 +30,7 @@ import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.enums.BookCopyStatus;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.BookCopyNotFoundException;
+import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.BookCopyService;
 import dev.fer.library.utils.TestUtils;
@@ -42,6 +43,9 @@ public class BookCopyControllerTest {
 
   @MockitoBean
   BookCopyService bookCopyService;
+
+  @MockitoBean
+  CustomUserDetailsService customUserDetailsService;
 
   private
   BookCopyResponse bookCopy = new BookCopyResponse(1L, 1L, 1L, "BK123", BookCopyStatus.PROCESSING.name());

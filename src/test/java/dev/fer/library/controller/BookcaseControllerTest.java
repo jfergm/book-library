@@ -32,6 +32,7 @@ import dev.fer.library.dto.request.BookcaseRequest;
 import dev.fer.library.dto.response.BookcaseResponse;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.BookcaseNotFoundException;
+import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.BookcaseService;
 import dev.fer.library.utils.TestUtils;
@@ -44,6 +45,9 @@ public class BookcaseControllerTest {
 
   @MockitoBean
   BookcaseService bookcaseService;
+
+  @MockitoBean
+  CustomUserDetailsService customUserDetailsService;
 
   private
   List<BookcaseResponse> bookcases;

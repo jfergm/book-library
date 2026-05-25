@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -14,10 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import dev.fer.library.dto.request.LoginRequest;
 import dev.fer.library.dto.request.UserRequest;
+import dev.fer.library.dto.response.LoginResponse;
 import dev.fer.library.dto.response.UserResponse;
 import dev.fer.library.enums.UserRole;
 import dev.fer.library.exception.BadRequestException;
+import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.AuthService;
 import dev.fer.library.utils.TestUtils;
@@ -31,12 +35,16 @@ public class AuthControllerTest {
   @MockitoBean
   AuthService authService;
 
+  @MockitoBean
+  CustomUserDetailsService customUserDetailsService;
+
   @Test
   void shouldRegisterUser() throws Exception {
     when(authService.register(any())).thenReturn(
       new UserResponse("email@example.com", UserRole.ADMIN)
     );
-    UserRequest request = new UserRequest("jose.gomezm12@gmail.com", "password123", UserRole.ADMIN);
+    UserRequest request = 
+      new UserRequest("jose.gomezm12@gmail.com", "password123", UserRole.ADMIN);
     
     mockMvc
       .perform(
@@ -51,7 +59,8 @@ public class AuthControllerTest {
   @Test
   void shouldThrowRegisterUserWhenInvalidEmail() throws Exception {
     when(authService.register(any())).thenThrow(BadRequestException.class);
-    UserRequest request = new UserRequest("jose.gomezm12@gmail.com", "password123", UserRole.ADMIN);
+    UserRequest request = 
+      new UserRequest("jose.gomezm12@gmail.com", "password123", UserRole.ADMIN);
     
     mockMvc
       .perform(
@@ -61,5 +70,24 @@ public class AuthControllerTest {
       .andExpect(status().isBadRequest());
     
     verify(authService).register(any());
+  }
+
+  @Test
+  void shouldReturnTokenWhenLogin() throws Exception {
+    when(authService.login(any())).thenReturn(
+      new LoginResponse("json.web.token")
+    );
+
+    LoginRequest request = new LoginRequest("email@example.com", "password");
+    
+    mockMvc
+      .perform(
+        post("/auth/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.token").value("json.web.token"));
+    
+    verify(authService).login(any());
   }
 }

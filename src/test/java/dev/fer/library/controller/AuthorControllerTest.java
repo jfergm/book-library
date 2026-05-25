@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.exception.AuthorNotFoundException;
+import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.AuthorService;
 import dev.fer.library.utils.TestUtils;
@@ -43,6 +44,9 @@ public class AuthorControllerTest {
 
   @MockitoBean
   AuthorService authorService;
+
+  @MockitoBean
+  CustomUserDetailsService customUserDetailsService;
 
   private List<AuthorResponse> authors;
 
