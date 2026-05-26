@@ -32,8 +32,9 @@ public class SecurityConfig {
 
     http
       .csrf(csrf -> csrf.disable())
-      .authorizeHttpRequests(auth -> 
-        auth.anyRequest().permitAll() // Allow access to all endpoints
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/auth/*").permitAll()
+        .anyRequest().authenticated() // Allow access to all endpoints
       )
       .authenticationProvider(authenticationProvider())
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
