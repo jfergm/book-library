@@ -33,6 +33,7 @@ import dev.fer.library.exception.BookCopyNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.BookCopyService;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(BookCopyController.class)
@@ -46,6 +47,9 @@ public class BookCopyControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   private
   BookCopyResponse bookCopy = new BookCopyResponse(1L, 1L, 1L, "BK123", BookCopyStatus.PROCESSING.name());

@@ -35,6 +35,7 @@ import dev.fer.library.exception.BookcaseNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.BookcaseService;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(BookcaseController.class)
@@ -48,6 +49,9 @@ public class BookcaseControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   private
   List<BookcaseResponse> bookcases;

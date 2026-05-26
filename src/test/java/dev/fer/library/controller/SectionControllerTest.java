@@ -31,6 +31,7 @@ import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.SectionNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.service.SectionService;
 import dev.fer.library.utils.TestUtils;
 
@@ -45,6 +46,9 @@ public class SectionControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   private List<SectionResponse> sections;
 

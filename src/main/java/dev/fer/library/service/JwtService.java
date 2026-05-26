@@ -45,7 +45,7 @@ public class JwtService {
 
   public boolean validateToken(String token) {
     try {
-      getAllClaims(token);
+      getAllClaims(token);      
       return true;
     } catch(JwtException ex) {
       return false;

@@ -31,6 +31,7 @@ import dev.fer.library.exception.FloorNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.FloorService;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
 import static org.hamcrest.Matchers.*;
@@ -46,6 +47,9 @@ public class FloorControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   private List<FloorResponse> floors;
 

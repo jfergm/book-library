@@ -14,6 +14,7 @@ import dev.fer.library.dto.response.LibraryResponse;
 import dev.fer.library.exception.LibraryNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.service.LibraryService;
 import dev.fer.library.utils.TestUtils;
 
@@ -43,6 +44,9 @@ public class LibraryControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   private List<LibraryResponse> libraries;
 

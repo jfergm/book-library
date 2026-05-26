@@ -35,6 +35,7 @@ import dev.fer.library.exception.BookNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.BookService;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(BookController.class)
@@ -48,6 +49,9 @@ public class BookControllerTest {
   
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   List<BookResponse> books;
 

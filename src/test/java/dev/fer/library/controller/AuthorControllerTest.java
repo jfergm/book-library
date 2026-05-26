@@ -15,6 +15,7 @@ import dev.fer.library.exception.AuthorNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.AuthorService;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
 import static org.hamcrest.Matchers.containsString;
@@ -47,6 +48,9 @@ public class AuthorControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   private List<AuthorResponse> authors;
 

@@ -34,6 +34,7 @@ import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.ShelfNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.service.ShelfService;
 import dev.fer.library.utils.TestUtils;
 
@@ -48,6 +49,9 @@ public class ShelfControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   private List<ShelfResponse> shelves;
 

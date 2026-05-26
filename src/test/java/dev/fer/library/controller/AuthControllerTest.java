@@ -24,6 +24,7 @@ import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.AuthService;
+import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(AuthController.class)
@@ -37,6 +38,9 @@ public class AuthControllerTest {
 
   @MockitoBean
   CustomUserDetailsService customUserDetailsService;
+
+  @MockitoBean
+  JwtService jwtService;
 
   @Test
   void shouldRegisterUser() throws Exception {
