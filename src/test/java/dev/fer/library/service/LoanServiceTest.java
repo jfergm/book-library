@@ -2,6 +2,8 @@ package dev.fer.library.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,19 +18,29 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.fer.library.dto.request.LoanRequest;
 import dev.fer.library.dto.response.LoanResponse;
 import dev.fer.library.entity.BookCopy;
 import dev.fer.library.entity.Loan;
 import dev.fer.library.entity.User;
 import dev.fer.library.enums.LoanStatus;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.LoanNotFoundException;
 import dev.fer.library.mapper.LoanMapper;
+import dev.fer.library.repository.BookCopyRepository;
 import dev.fer.library.repository.LoanRepository;
+import dev.fer.library.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class LoanServiceTest {
   @Mock
   private LoanRepository loanRepository;
+
+  @Mock
+  private UserRepository userRepository;
+
+  @Mock
+  private BookCopyRepository bookCopyRepository;
 
   private LoanMapper loanMapper = new LoanMapper();
   
@@ -41,7 +53,7 @@ public class LoanServiceTest {
 
   @BeforeEach
   void setUp() {
-    loanService = new LoanService(loanRepository, loanMapper);
+    loanService = new LoanService(loanRepository, loanMapper, userRepository, bookCopyRepository);
 
     loans = new ArrayList<>();
 
@@ -122,5 +134,78 @@ public class LoanServiceTest {
     assertThat(response.size()).isEqualTo(3);
 
     verify(loanRepository).findAll();
+  }
+
+  @Test
+  void shouldCreateLoan() {
+    when(userRepository.findById(1L)).thenReturn(
+      Optional.of(loans.getFirst().getUser())
+    );
+    when(bookCopyRepository.findById(1L)).thenReturn(
+      Optional.of(loans.getFirst().getBookCopy())
+    );
+    when(loanRepository.save(any())).thenReturn(loans.getFirst());
+
+    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
+    LoanResponse response = loanService.createLoan(request);
+
+    assertThat(response.id()).isNotNull();
+    assertThat(response.userId()).isEqualTo(1L);
+    assertThat(response.bookCopyId()).isEqualTo(1L);
+    assertThat(response.loanDate()).isEqualTo(baseDate);
+    assertThat(response.dueDate()).isEqualTo(new Date(baseDate.getTime() + 604800000));
+    assertThat(response.returnDate()).isNull();
+    assertThat(response.status()).isEqualTo(LoanStatus.ACTIVE);
+
+    verify(userRepository).findById(1L);
+    verify(bookCopyRepository).findById(1L);
+    verify(loanRepository).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenCreateLoanWithInvalidUser() {
+    when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
+
+    assertThrows(BadRequestException.class, () -> loanService.createLoan(request));
+
+    verify(userRepository).findById(1L);
+    verify(bookCopyRepository, times(0)).findById(1L);
+    verify(loanRepository, times(0)).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenCreateLoanWithInvalidBookCopy() {
+    when(userRepository.findById(1L)).thenReturn(
+      Optional.of(loans.getFirst().getUser())
+    );
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.empty());
+
+    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
+
+    assertThrows(BadRequestException.class, () -> loanService.createLoan(request));
+
+    verify(userRepository).findById(1L);
+    verify(bookCopyRepository).findById(1L);
+    verify(loanRepository, times(0)).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenCreateLoanWithInvalidLoanAndReturnDate() {
+    when(userRepository.findById(1L)).thenReturn(
+      Optional.of(loans.getFirst().getUser())
+    );
+    when(bookCopyRepository.findById(1L)).thenReturn(
+      Optional.of(loans.getFirst().getBookCopy())
+    );
+
+    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() - 604800000), "");
+
+    assertThrows(BadRequestException.class, () -> loanService.createLoan(request));
+
+    verify(userRepository).findById(1L);
+    verify(bookCopyRepository).findById(1L);
+    verify(loanRepository, times(0)).save(any());
   }
 }

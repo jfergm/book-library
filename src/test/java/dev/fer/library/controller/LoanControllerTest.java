@@ -3,10 +3,13 @@ package dev.fer.library.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,17 +22,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import dev.fer.library.dto.request.LoanRequest;
 import dev.fer.library.dto.response.LoanResponse;
 import dev.fer.library.enums.LoanStatus;
+import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.LoanNotFoundException;
 import dev.fer.library.security.CustomUserDetailsService;
 import dev.fer.library.security.SecurityConfig;
 import dev.fer.library.service.JwtService;
 import dev.fer.library.service.LoanService;
+import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(LoanController.class)
 @Import(SecurityConfig.class)
@@ -130,5 +137,37 @@ public class LoanControllerTest {
       .andExpect(jsonPath("$", hasSize(3)));
 
     verify(loanService).getLoans();
+  }
+
+  @Test
+  void shouldReturnCreatedAndLocation() throws Exception {
+    when(loanService.createLoan(any())).thenReturn(loans.getFirst());
+
+    LoanRequest loanRequest = new LoanRequest(1L, 1L, basDate, basDate, "");
+
+    mockMvc
+      .perform(
+        post("/loans")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(loanRequest)))
+      .andExpect(status().isCreated())
+      .andExpect(header().string("Location", containsString("/loans/1")));
+    
+    verify(loanService).createLoan(any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenServiceThrow() throws Exception {
+    when(loanService.createLoan(any())).thenThrow(BadRequestException.class);
+    LoanRequest loanRequest = new LoanRequest(3L, 1L, basDate, basDate, "");
+
+    mockMvc
+      .perform(
+        post("/loans")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(loanRequest)))
+      .andExpect(status().isBadRequest());
+    
+    verify(loanService).createLoan(any());
   }
 }

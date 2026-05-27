@@ -1,17 +1,20 @@
 package dev.fer.library.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import dev.fer.library.dto.request.LoanRequest;
 import dev.fer.library.dto.response.LoanResponse;
 import dev.fer.library.entity.BookCopy;
 import dev.fer.library.entity.Loan;
 import dev.fer.library.entity.User;
 import dev.fer.library.enums.LoanStatus;
+import dev.fer.library.exception.BadRequestException;
 
 public class LoanMapperTest {
   private LoanMapper mapper = new LoanMapper();
@@ -40,5 +43,65 @@ public class LoanMapperTest {
     List<LoanResponse> responseList = mapper.toResponseList(loans);
 
     assertThat(responseList.size()).isEqualTo(1);
+  }
+
+  @Test
+  void shouldConvertRequestToEntity() {
+    LoanRequest request = new LoanRequest(
+      1L, 
+      1L,
+      date,
+      datePlus7Days,
+      ""
+    );
+
+    Loan loanEntity = mapper.toEntity(request, loan.getUser(), loan.getBookCopy());
+
+    assertThat(loanEntity.getId()).isNull();
+    assertThat(loanEntity.getUser().getId()).isEqualTo(1L);
+    assertThat(loanEntity.getBookCopy().getId()).isEqualTo(1L);
+    assertThat(loanEntity.getLoanDate()).isEqualTo(date);
+    assertThat(loanEntity.getDueDate()).isEqualTo(datePlus7Days);
+    assertThat(loanEntity.getReturnDate()).isNull();
+    assertThat(loanEntity.getStatus()).isEqualTo(LoanStatus.ACTIVE);
+  }
+
+  @Test
+  void shouldThrowWhenUserNotMatch() {
+    LoanRequest request = new LoanRequest(
+      2L,
+      1L,
+      date,
+      datePlus7Days,
+      ""
+    );
+
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, loan.getUser(), loan.getBookCopy()));
+  }
+
+  @Test
+  void shouldThrowWhenBookCopyNotMatch() {
+    LoanRequest request = new LoanRequest(
+      1L,
+      2L,
+      date,
+      datePlus7Days,
+      ""
+    );
+
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, loan.getUser(), loan.getBookCopy()));
+  }
+
+  @Test
+  void shouldThrowWhenLoanDateIsAfterDueDate() {
+    LoanRequest request = new LoanRequest(
+      1L,
+      1L,
+      date,
+      new Date(date.getTime() - 604800000),
+      ""
+    );
+
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, loan.getUser(), loan.getBookCopy()));
   }
 }
