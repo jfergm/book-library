@@ -1,5 +1,7 @@
 package dev.fer.library.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.response.LoanResponse;
@@ -22,5 +24,11 @@ public class LoanService {
     Loan loan = loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException());
 
     return loanMapper.toResponse(loan);
+  }
+
+  public List<LoanResponse> getLoans() {
+    List<Loan> loans = (List<Loan>) loanRepository.findAll();
+
+    return loanMapper.toResponseList(loans);
   }
 }

@@ -1,6 +1,7 @@
 package dev.fer.library.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -9,8 +10,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -43,21 +47,56 @@ public class LoanControllerTest {
   @MockitoBean
   LoanService loanService;
 
-  @Test
-  void shouldReturnLoan() throws Exception {
-    Date date = new Date(1779256800000L); // 2026 may 20
-    when(loanService.getLoan(anyLong())).thenReturn(
+  private List<LoanResponse> loans;
+  
+  Date basDate = new Date(1779256800000L); // 20 may 2026
+
+  @BeforeEach
+  void setUp() {
+    loans = new ArrayList<>();
+
+    loans.add(
       new LoanResponse(
         1L, 
         1L, 
         1L, 
-        date, 
-        new Date(date.getTime() + 604800000), 
+        basDate, 
+        new Date(basDate.getTime() + 604800000), // + 7 days
         null, 
         LoanStatus.ACTIVE, 
         ""
-      )    
+      ) 
     );
+    loans.add(
+      new LoanResponse(
+        2L, 
+        2L, 
+        2L, 
+        basDate, 
+        new Date(basDate.getTime() + 604800000), // + 7 days
+        null, 
+        LoanStatus.ACTIVE, 
+        ""
+      ) 
+    );
+    loans.add(
+      new LoanResponse(
+        3L, 
+        3L, 
+        3L, 
+        basDate, 
+        new Date(basDate.getTime() + 604800000), // + 7 days
+        null, 
+        LoanStatus.CLOSED, 
+        ""
+      ) 
+    );
+  }
+
+  @Test
+  void shouldReturnLoan() throws Exception {
+    
+    when(loanService.getLoan(anyLong())).thenReturn(loans.getFirst());
 
     mockMvc.perform(get("/loans/1"))
       .andExpect(status().isOk())
@@ -80,5 +119,16 @@ public class LoanControllerTest {
       .andExpect(status().isNotFound());
 
     verify(loanService).getLoan(anyLong());
+  }
+
+  @Test
+  void shouldReturnLoanList() throws Exception {
+    when(loanService.getLoans()).thenReturn(loans);
+
+    mockMvc.perform(get("/loans"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", hasSize(3)));
+
+    verify(loanService).getLoans();
   }
 }

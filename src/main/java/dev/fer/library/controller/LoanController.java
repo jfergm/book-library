@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.fer.library.dto.response.LoanResponse;
 import dev.fer.library.service.LoanService;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
 
 @RestController
 @RequestMapping("/loans")
@@ -26,5 +27,9 @@ public class LoanController {
     LoanResponse response = loanService.getLoan(id);
     return ResponseEntity.ok(response);
   }
-  
+
+  @GetMapping("")
+  public ResponseEntity<List<LoanResponse>> getLoans() {
+    return ResponseEntity.ok(loanService.getLoans());
+  } 
 }

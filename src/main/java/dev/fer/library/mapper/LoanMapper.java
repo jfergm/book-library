@@ -1,5 +1,7 @@
 package dev.fer.library.mapper;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import dev.fer.library.dto.response.LoanResponse;
@@ -19,5 +21,9 @@ public class LoanMapper {
       loan.getStatus(), 
       loan.getNotes()
     );
+  }
+
+  public List<LoanResponse> toResponseList(List<Loan> loans) {
+    return loans.stream().map(this::toResponse).toList();
   }
 }
