@@ -1,5 +1,6 @@
 package dev.fer.library.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -67,5 +68,17 @@ public class LoanService {
     Loan canceled = loanMapper.toCancelEntity(loan);
 
     return loanMapper.toResponse(loanRepository.save(canceled));
+  }
+
+  public LoanResponse closeLoan(long id) {
+    Loan loan = loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException());
+
+    if (loan.getStatus() == LoanStatus.CANCELED) {
+      throw new BadRequestException();
+    }
+
+    Loan closed = loanMapper.toCloseEntity(loan, new Date());
+
+    return loanMapper.toResponse(loanRepository.save(closed));
   }
 }

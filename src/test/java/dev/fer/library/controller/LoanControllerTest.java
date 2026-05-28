@@ -201,4 +201,35 @@ public class LoanControllerTest {
 
     verify(loanService).cancelLoan(anyLong());
   }
+
+  @Test
+  void shouldReturnClosedLoan() throws Exception {
+    when(loanService.closeLoan(anyLong())).thenReturn(
+      loans.get(2)
+    );
+    mockMvc.perform(post("/loans/3/close"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value("3"))
+      .andExpect(jsonPath("$.status").value("CLOSED"));
+
+    verify(loanService).closeLoan(anyLong());
+  }
+
+  @Test
+  void shouldReturnNotFloundWhenCloseInvalidLoan() throws Exception {
+    when(loanService.closeLoan(anyLong())).thenThrow(LoanNotFoundException.class);
+    mockMvc.perform(post("/loans/2/close"))
+      .andExpect(status().isNotFound());
+
+    verify(loanService).closeLoan(anyLong());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenCloseCanceledLoan() throws Exception {
+    when(loanService.closeLoan(anyLong())).thenThrow(BadRequestException.class);
+    mockMvc.perform(post("/loans/2/close"))
+      .andExpect(status().isBadRequest());
+
+    verify(loanService).closeLoan(anyLong());
+  }
 }

@@ -59,5 +59,9 @@ public class LoanController {
     return ResponseEntity.ok(canceled);
   }
   
-  
+  @PostMapping("/{id}/close")
+  public ResponseEntity<LoanResponse> closeLoan(@PathVariable Long id) {
+    LoanResponse closed = loanService.closeLoan(id);
+    return ResponseEntity.ok(closed);
+  }
 }

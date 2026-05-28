@@ -78,7 +78,7 @@ public class LoanServiceTest {
         baseDate, 
         new Date(baseDate.getTime() + 604800000), // + 7 days
         null, 
-        LoanStatus.ACTIVE, 
+        LoanStatus.CANCELED, 
         ""
       )
     );
@@ -239,6 +239,39 @@ public class LoanServiceTest {
 
     assertThrows(BadRequestException.class, () -> loanService.cancelLoan(2L));
 
+    verify(loanRepository).findById(2L);
+    verify(loanRepository, times(0)).save(any(Loan.class));
+  }
+
+  @Test
+  void shouldCloseLoan() {
+    when(loanRepository.findById(1L)).thenReturn(Optional.of(loans.getFirst()));
+    when(loanRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    LoanResponse closed = loanService.closeLoan(1L);
+
+    assertThat(closed.id()).isEqualTo(1L);
+    assertThat(closed.status()).isEqualTo(LoanStatus.CLOSED);
+    assertThat(closed.returnDate()).isNotNull();
+
+    verify(loanRepository).findById(1L);
+    verify(loanRepository).save(any(Loan.class));
+  }
+
+  @Test
+  void shouldThrowWhenLoanIsInvalid() {
+    when(loanRepository.findById(99L)).thenReturn(Optional.empty());
+
+    assertThrows(LoanNotFoundException.class, () -> loanService.closeLoan(99L));
+    verify(loanRepository).findById(99L);
+    verify(loanRepository, times(0)).save(any(Loan.class));
+  } 
+  
+  @Test
+  void shouldThrowWhenLoanIsCanceled() {
+    when(loanRepository.findById(2L)).thenReturn(Optional.of(loans.get(1)));
+
+    assertThrows(BadRequestException.class, () -> loanService.closeLoan(2L));
     verify(loanRepository).findById(2L);
     verify(loanRepository, times(0)).save(any(Loan.class));
   }

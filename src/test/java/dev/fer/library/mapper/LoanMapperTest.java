@@ -118,4 +118,19 @@ public class LoanMapperTest {
     assertThat(cancel.getNotes()).isEqualTo(loan.getNotes());
     assertThat(cancel.getStatus()).isEqualTo(LoanStatus.CANCELED);
   }
+
+  @Test
+  void shouldConvertToCloseEntity() {
+    Date returnDate = new Date();
+    Loan cancel = mapper.toCloseEntity(loan, returnDate);
+
+    assertThat(cancel.getId()).isEqualTo(loan.getId());
+    assertThat(cancel.getUser()).isEqualTo(loan.getUser());
+    assertThat(cancel.getBookCopy()).isEqualTo(loan.getBookCopy());
+    assertThat(cancel.getLoanDate()).isEqualTo(loan.getLoanDate());
+    assertThat(cancel.getDueDate()).isEqualTo(loan.getDueDate());
+    assertThat(cancel.getReturnDate()).isEqualTo(returnDate);
+    assertThat(cancel.getNotes()).isEqualTo(loan.getNotes());
+    assertThat(cancel.getStatus()).isEqualTo(LoanStatus.CLOSED);
+  }
 }

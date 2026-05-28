@@ -1,5 +1,6 @@
 package dev.fer.library.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -47,5 +48,9 @@ public class LoanMapper {
 
   public Loan toCancelEntity(Loan loan) {
     return new Loan(loan.getId(), loan.getUser(), loan.getBookCopy(), loan.getLoanDate(), loan.getDueDate(), loan.getReturnDate(), LoanStatus.CANCELED, loan.getNotes());
+  }
+
+  public Loan toCloseEntity(Loan loan, Date returnDate) {
+    return new Loan(loan.getId(), loan.getUser(), loan.getBookCopy(), loan.getLoanDate(), loan.getDueDate(), returnDate, LoanStatus.CLOSED, loan.getNotes());
   }
 }
