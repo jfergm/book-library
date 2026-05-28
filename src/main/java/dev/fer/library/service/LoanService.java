@@ -9,6 +9,7 @@ import dev.fer.library.dto.response.LoanResponse;
 import dev.fer.library.entity.BookCopy;
 import dev.fer.library.entity.Loan;
 import dev.fer.library.entity.User;
+import dev.fer.library.enums.LoanStatus;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.LoanNotFoundException;
 import dev.fer.library.mapper.LoanMapper;
@@ -54,5 +55,17 @@ public class LoanService {
     Loan newLoan = loanMapper.toEntity(request, user, bookCopy);
 
     return loanMapper.toResponse(loanRepository.save(newLoan));
+  }
+
+  public LoanResponse cancelLoan(long id) {
+    Loan loan = loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException());
+
+    if (loan.getStatus() == LoanStatus.CLOSED) {
+      throw new BadRequestException();
+    }
+
+    Loan canceled = loanMapper.toCancelEntity(loan);
+
+    return loanMapper.toResponse(loanRepository.save(canceled));
   }
 }

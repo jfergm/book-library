@@ -104,4 +104,18 @@ public class LoanMapperTest {
 
     assertThrows(BadRequestException.class, () -> mapper.toEntity(request, loan.getUser(), loan.getBookCopy()));
   }
+
+  @Test
+  void shouldConvertToCancelEntity() {
+    Loan cancel = mapper.toCancelEntity(loan);
+
+    assertThat(cancel.getId()).isEqualTo(loan.getId());
+    assertThat(cancel.getUser()).isEqualTo(loan.getUser());
+    assertThat(cancel.getBookCopy()).isEqualTo(loan.getBookCopy());
+    assertThat(cancel.getLoanDate()).isEqualTo(loan.getLoanDate());
+    assertThat(cancel.getDueDate()).isEqualTo(loan.getDueDate());
+    assertThat(cancel.getReturnDate()).isEqualTo(loan.getReturnDate());
+    assertThat(cancel.getNotes()).isEqualTo(loan.getNotes());
+    assertThat(cancel.getStatus()).isEqualTo(LoanStatus.CANCELED);
+  }
 }

@@ -44,4 +44,8 @@ public class LoanMapper {
 
     return new Loan(null, user, bookCopy, request.loanDate(), request.dueDate(), null, LoanStatus.ACTIVE, request.notes());
   }
+
+  public Loan toCancelEntity(Loan loan) {
+    return new Loan(loan.getId(), loan.getUser(), loan.getBookCopy(), loan.getLoanDate(), loan.getDueDate(), loan.getReturnDate(), LoanStatus.CANCELED, loan.getNotes());
+  }
 }

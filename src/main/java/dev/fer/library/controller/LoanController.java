@@ -51,5 +51,13 @@ public class LoanController {
 
     return ResponseEntity.created(location).build();
   } 
+
+  @PostMapping("/{id}/cancel")
+  public ResponseEntity<LoanResponse> cancelLoan(@PathVariable Long id) {
+    LoanResponse canceled = loanService.cancelLoan(id);
+
+    return ResponseEntity.ok(canceled);
+  }
+  
   
 }

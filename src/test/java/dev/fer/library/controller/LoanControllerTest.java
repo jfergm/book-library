@@ -82,7 +82,7 @@ public class LoanControllerTest {
         basDate, 
         new Date(basDate.getTime() + 604800000), // + 7 days
         null, 
-        LoanStatus.ACTIVE, 
+        LoanStatus.CANCELED, 
         ""
       ) 
     );
@@ -169,5 +169,36 @@ public class LoanControllerTest {
       .andExpect(status().isBadRequest());
     
     verify(loanService).createLoan(any());
+  }
+
+  @Test
+  void shouldReturnCanceledLoan() throws Exception {
+    when(loanService.cancelLoan(anyLong())).thenReturn(
+      loans.get(1)
+    );
+    mockMvc.perform(post("/loans/2/cancel"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value("2"))
+      .andExpect(jsonPath("$.status").value("CANCELED"));
+
+    verify(loanService).cancelLoan(anyLong());
+  }
+
+  @Test
+  void ShouldReturnNotFoundWhenCancelInvalidLoan() throws Exception {
+    when(loanService.cancelLoan(anyLong())).thenThrow(LoanNotFoundException.class);
+    mockMvc.perform(post("/loans/2/cancel"))
+      .andExpect(status().isNotFound());
+
+    verify(loanService).cancelLoan(anyLong());
+  }
+
+  @Test
+  void ShouldReturnNotFoundWhenCancelClosedLoan() throws Exception {
+    when(loanService.cancelLoan(anyLong())).thenThrow(BadRequestException.class);
+    mockMvc.perform(post("/loans/2/cancel"))
+      .andExpect(status().isBadRequest());
+
+    verify(loanService).cancelLoan(anyLong());
   }
 }
