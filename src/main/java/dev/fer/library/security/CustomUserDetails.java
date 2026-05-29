@@ -12,7 +12,7 @@ import dev.fer.library.entity.User;
 
 public class CustomUserDetails implements UserDetails {
 
-  private User user;
+  private transient User user;
 
   public CustomUserDetails(User user) {
     this.user = user;
