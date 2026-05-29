@@ -57,7 +57,8 @@ public class BookCopyServiceTest {
 
   @BeforeEach
   void setUp() {
-    bookCopyService = new BookCopyService(bookCopyRepository, bookCopyMapper, bookRepository, shelfRepository);
+    bookCopyService = new BookCopyService(
+      bookCopyRepository, bookCopyMapper, bookRepository, shelfRepository);
   }
 
   @Test
@@ -149,7 +150,9 @@ public class BookCopyServiceTest {
     
     BookCopyUpdateRequest request = new BookCopyUpdateRequest("NEWCODE");
 
-    assertThrows(BookCopyNotFoundException.class, () ->  bookCopyService.updateBookCopy(1L, request));
+    assertThrows(
+      BookCopyNotFoundException.class, 
+      () ->  bookCopyService.updateBookCopy(1L, request));
 
     verify(bookCopyRepository).findById(1L);
     verify(bookCopyRepository, times(0)).save(any());
@@ -159,7 +162,8 @@ public class BookCopyServiceTest {
   @Test
   void shouldUpdateBookCopyShelf() {
     when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(bookCopy));
-    when(shelfRepository.findById(2L)).thenReturn(Optional.of(new Shelf(2L, null, null, null)));
+    when(shelfRepository.findById(2L))
+      .thenReturn(Optional.of(new Shelf(2L, null, null, null)));
     when(bookCopyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
     
     BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(2L);
@@ -197,7 +201,9 @@ public class BookCopyServiceTest {
     
     BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(null);
 
-    assertThrows(BookCopyNotFoundException.class, () -> bookCopyService.updateBookCopyShelf(1L, request));
+    assertThrows(
+      BookCopyNotFoundException.class, 
+      () -> bookCopyService.updateBookCopyShelf(1L, request));
 
     verify(bookCopyRepository).findById(1L);
     verify(shelfRepository, times(0)).findById(any());
@@ -211,7 +217,9 @@ public class BookCopyServiceTest {
     
     BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(2L);
 
-    assertThrows(BadRequestException.class, () -> bookCopyService.updateBookCopyShelf(1L, request));
+    assertThrows(
+      BadRequestException.class, 
+      () -> bookCopyService.updateBookCopyShelf(1L, request));
 
     verify(bookCopyRepository).findById(1L);
     verify(shelfRepository).findById(anyLong());
@@ -232,9 +240,34 @@ public class BookCopyServiceTest {
   void shouldThrowWhenDeleteBookCopyWithInvalidBookCopy() {
     when(bookCopyRepository.existsById(1L)).thenReturn(false);
 
-    assertThrows(BookCopyNotFoundException.class, () -> bookCopyService.deleteBookCopy(1L));
+    assertThrows(
+      BookCopyNotFoundException.class, 
+      () -> bookCopyService.deleteBookCopy(1L));
 
     verify(bookCopyRepository).existsById(1L);
     verify(bookCopyRepository, times(0)).deleteById(1L);
+  }
+
+  @Test
+  void shouldReturnBookCopyEntity() {
+    when(bookCopyRepository.findById(1L)).thenReturn(
+      Optional.of(bookCopy)
+    );
+
+    Optional<BookCopy> entity = bookCopyService.getEntity(1L);
+    assertThat(entity.isPresent()).isTrue();
+    assertThat(entity.get()).isEqualTo(bookCopy);
+
+    verify(bookCopyRepository).findById(1L);
+  }
+
+  @Test
+  void shouldReturnEmptyBookCopyEntity() {
+    when(bookCopyRepository.findById(1L)).thenReturn(Optional.empty());
+
+    Optional<BookCopy> entity = bookCopyService.getEntity(1L);
+    assertThat(entity.isEmpty()).isTrue();
+
+    verify(bookCopyRepository).findById(1L);
   }
 }

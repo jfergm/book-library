@@ -23,11 +23,11 @@ import dev.fer.library.dto.response.LoanResponse;
 import dev.fer.library.entity.BookCopy;
 import dev.fer.library.entity.Loan;
 import dev.fer.library.entity.User;
+import dev.fer.library.enums.BookCopyStatus;
 import dev.fer.library.enums.LoanStatus;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.exception.LoanNotFoundException;
 import dev.fer.library.mapper.LoanMapper;
-import dev.fer.library.repository.BookCopyRepository;
 import dev.fer.library.repository.LoanRepository;
 import dev.fer.library.repository.UserRepository;
 
@@ -40,7 +40,7 @@ public class LoanServiceTest {
   private UserRepository userRepository;
 
   @Mock
-  private BookCopyRepository bookCopyRepository;
+  private BookCopyService bookCopyService;
 
   private LoanMapper loanMapper = new LoanMapper();
   
@@ -53,7 +53,7 @@ public class LoanServiceTest {
 
   @BeforeEach
   void setUp() {
-    loanService = new LoanService(loanRepository, loanMapper, userRepository, bookCopyRepository);
+    loanService = new LoanService(loanRepository, loanMapper, userRepository, bookCopyService);
 
     loans = new ArrayList<>();
 
@@ -61,7 +61,7 @@ public class LoanServiceTest {
       new Loan(
         1L, 
         new User(1L, null, null, null), 
-        new BookCopy(1L, null, null, null, null), 
+        new BookCopy(1L, null, null, null, BookCopyStatus.AVAILABLE), 
         baseDate, 
         new Date(baseDate.getTime() + 604800000), // + 7 days
         null, 
@@ -74,7 +74,7 @@ public class LoanServiceTest {
       new Loan(
         2L, 
         new User(2L, null, null, null), 
-        new BookCopy(2L, null, null, null, null), 
+        new BookCopy(2L, null, null, null, BookCopyStatus.CHECKED_OUT), 
         baseDate, 
         new Date(baseDate.getTime() + 604800000), // + 7 days
         null, 
@@ -87,7 +87,7 @@ public class LoanServiceTest {
       new Loan(
         3L, 
         new User(3L, null, null, null), 
-        new BookCopy(3L, null, null, null, null), 
+        new BookCopy(3L, null, null, null, BookCopyStatus.LOST), 
         baseDate, 
         new Date(baseDate.getTime() + 604800000), // + 7 days
         null, 
@@ -141,12 +141,15 @@ public class LoanServiceTest {
     when(userRepository.findById(1L)).thenReturn(
       Optional.of(loans.getFirst().getUser())
     );
-    when(bookCopyRepository.findById(1L)).thenReturn(
+    when(bookCopyService.getEntity(1L)).thenReturn(
       Optional.of(loans.getFirst().getBookCopy())
     );
     when(loanRepository.save(any())).thenReturn(loans.getFirst());
 
-    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
+    when(bookCopyService.checkOut(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    LoanRequest request = 
+      new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
     LoanResponse response = loanService.createLoan(request);
 
     assertThat(response.id()).isNotNull();
@@ -158,20 +161,22 @@ public class LoanServiceTest {
     assertThat(response.status()).isEqualTo(LoanStatus.ACTIVE);
 
     verify(userRepository).findById(1L);
-    verify(bookCopyRepository).findById(1L);
+    verify(bookCopyService).getEntity(1L);
     verify(loanRepository).save(any());
+    verify(bookCopyService).checkOut(any(BookCopy.class));
   }
 
   @Test
   void shouldThrowWhenCreateLoanWithInvalidUser() {
     when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
+    LoanRequest request = 
+      new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
 
     assertThrows(BadRequestException.class, () -> loanService.createLoan(request));
 
     verify(userRepository).findById(1L);
-    verify(bookCopyRepository, times(0)).findById(1L);
+    verify(bookCopyService, times(0)).getEntity(1L);
     verify(loanRepository, times(0)).save(any());
   }
 
@@ -180,14 +185,20 @@ public class LoanServiceTest {
     when(userRepository.findById(1L)).thenReturn(
       Optional.of(loans.getFirst().getUser())
     );
-    when(bookCopyRepository.findById(1L)).thenReturn(Optional.empty());
+    when(bookCopyService.getEntity(1L)).thenReturn(Optional.empty());
 
-    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
+    LoanRequest request = new LoanRequest(
+      1L, 
+      1L, 
+      baseDate, 
+      new Date(baseDate.getTime() + 604800000), 
+      ""
+    );
 
     assertThrows(BadRequestException.class, () -> loanService.createLoan(request));
 
     verify(userRepository).findById(1L);
-    verify(bookCopyRepository).findById(1L);
+    verify(bookCopyService).getEntity(1L);
     verify(loanRepository, times(0)).save(any());
   }
 
@@ -196,16 +207,42 @@ public class LoanServiceTest {
     when(userRepository.findById(1L)).thenReturn(
       Optional.of(loans.getFirst().getUser())
     );
-    when(bookCopyRepository.findById(1L)).thenReturn(
+    when(bookCopyService.getEntity(1L)).thenReturn(
       Optional.of(loans.getFirst().getBookCopy())
     );
 
-    LoanRequest request = new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() - 604800000), "");
+    LoanRequest request = 
+      new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() - 604800000), "");
 
     assertThrows(BadRequestException.class, () -> loanService.createLoan(request));
 
     verify(userRepository).findById(1L);
-    verify(bookCopyRepository).findById(1L);
+    verify(bookCopyService).getEntity(1L);
+    verify(loanRepository, times(0)).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenBookCopyIsAlreadyCheckedOut() {
+    when(userRepository.findById(1L)).thenReturn(
+      Optional.of(loans.getFirst().getUser())
+    );
+    when(bookCopyService.getEntity(1L)).thenReturn(
+      Optional.of(
+        new BookCopy(1L, null, null, null, BookCopyStatus.CHECKED_OUT)
+      )
+    );
+
+    LoanRequest request = 
+      new LoanRequest(1L, 1L, baseDate, new Date(baseDate.getTime() + 604800000), "");
+
+    Exception ex = assertThrows(
+      BadRequestException.class, 
+      () -> loanService.createLoan(request));
+
+    assertThat(ex.getMessage()).isEqualTo("book copy is not available");
+
+    verify(userRepository).findById(1L);
+    verify(bookCopyService).getEntity(1L);
     verify(loanRepository, times(0)).save(any());
   }
 

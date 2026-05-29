@@ -134,7 +134,9 @@ public class BookCopyMapperTest {
     BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(2L);
     Shelf shelf = new Shelf(1L, null, null, null);
 
-    assertThrows(BadRequestException.class, () -> mapper.toUpdateShelfEntity(request, bookCopy, shelf));
+    assertThrows(
+      BadRequestException.class, 
+      () -> mapper.toUpdateShelfEntity(request, bookCopy, shelf));
   }
 
   @Test
@@ -150,7 +152,9 @@ public class BookCopyMapperTest {
     BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(2L);
     Shelf shelf = null;
 
-    assertThrows(BadRequestException.class, () -> mapper.toUpdateShelfEntity(request, bookCopy, shelf));
+    assertThrows(
+      BadRequestException.class, 
+      () -> mapper.toUpdateShelfEntity(request, bookCopy, shelf));
   }
 
   @Test
@@ -166,6 +170,27 @@ public class BookCopyMapperTest {
     BookCopyUpdateShelfRequest request = new BookCopyUpdateShelfRequest(null);
     Shelf shelf = new Shelf(1L, null, null, null);
 
-    assertThrows(BadRequestException.class, () -> mapper.toUpdateShelfEntity(request, bookCopy, shelf));
+    assertThrows(
+      BadRequestException.class, 
+      () -> mapper.toUpdateShelfEntity(request, bookCopy, shelf));
+  }
+
+  @Test
+  void shouldConvertToCheckedOutEntity() {
+    BookCopy bookCopy =  new BookCopy(
+      1L,
+      new Book(1L, null, null, null),
+      new Shelf(1L, null, null, null), 
+      "BK123", 
+      BookCopyStatus.AVAILABLE
+    );
+
+    BookCopy checkedOut = mapper.toCheckedOutEntity(bookCopy);
+
+    assertThat(checkedOut.getId()).isEqualTo(bookCopy.getId());
+    assertThat(checkedOut.getBook()).isEqualTo(bookCopy.getBook());
+    assertThat(checkedOut.getShelf()).isEqualTo(bookCopy.getShelf());
+    assertThat(checkedOut.getCode()).isEqualTo(bookCopy.getCode());
+    assertThat(checkedOut.getStatus()).isEqualTo(BookCopyStatus.CHECKED_OUT);
   }
 }

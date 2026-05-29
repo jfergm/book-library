@@ -85,10 +85,13 @@ public class BookCopyService {
     Shelf shelf = null;
 
     if (request.shelfId() != null) {
-      shelf = shelfRepository.findById(request.shelfId()).orElseThrow(() -> new BadRequestException());
+      shelf = shelfRepository
+        .findById(request.shelfId())
+        .orElseThrow(() -> new BadRequestException());
     }
     
-    BookCopy updated = bookCopyMapper.toUpdateShelfEntity(request, bookCopy.get(), shelf);
+    BookCopy updated = 
+      bookCopyMapper.toUpdateShelfEntity(request, bookCopy.get(), shelf);
 
     return bookCopyMapper.toResponse(bookCopyRepository.save(updated));
 
@@ -101,5 +104,14 @@ public class BookCopyService {
     }
 
     throw new BookCopyNotFoundException();
+  }
+
+  public Optional<BookCopy> getEntity(long id) {
+    return bookCopyRepository.findById(id);
+  }
+
+  public BookCopy checkOut(BookCopy bookCopy) {
+    BookCopy checkedOut = bookCopyMapper.toCheckedOutEntity(bookCopy);
+    return bookCopyRepository.save(checkedOut);
   }
 }
