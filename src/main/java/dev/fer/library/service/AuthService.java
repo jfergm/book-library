@@ -60,7 +60,6 @@ public class AuthService {
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
     String token = jwtService.generateToken(userDetails);
-    LoginResponse login = new LoginResponse(token);
-    return login;
+    return new LoginResponse(token);
   }
 }

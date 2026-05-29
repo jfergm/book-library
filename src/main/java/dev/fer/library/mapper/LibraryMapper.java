@@ -11,9 +11,7 @@ import dev.fer.library.entity.Library;
 @Component
 public class LibraryMapper {
   public Library toEntity(LibraryRequest request) {
-    Library library = new Library(null, request.name());
-
-    return library;
+    return new Library(null, request.name());
   }
 
   public LibraryResponse toResponse(Library library) {

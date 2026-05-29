@@ -17,9 +17,7 @@ public class FloorMapper {
       throw new IllegalArgumentException();
     }
 
-    Floor floor = new Floor(null, library, request.code(), request.description());
-
-    return floor;
+    return new Floor(null, library, request.code(), request.description());
   }
 
   public FloorResponse toResponse(Floor floor) {
