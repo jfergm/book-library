@@ -8,7 +8,7 @@ import dev.fer.library.entity.User;
 
 
 public interface UserRepository extends JpaRepository<User, Long> {
-  Boolean existsByEmail(String email);
+  boolean existsByEmail(String email);
 
   Optional<User> findByEmail(String email);
 }
