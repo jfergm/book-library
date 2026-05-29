@@ -12,7 +12,7 @@ import dev.fer.library.dto.request.LibraryRequest;
 import dev.fer.library.dto.response.LibraryResponse;
 import dev.fer.library.entity.Library;
 
-public class LibraryMapperTest {
+class LibraryMapperTest {
   private LibraryMapper libraryMapper;
 
   @BeforeEach

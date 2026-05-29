@@ -15,7 +15,7 @@ import dev.fer.library.entity.Shelf;
 import dev.fer.library.enums.BookCopyStatus;
 import dev.fer.library.exception.BadRequestException;
 
-public class BookCopyMapperTest {
+class BookCopyMapperTest {
   BookCopyMapper mapper = new BookCopyMapper();
 
   @Test

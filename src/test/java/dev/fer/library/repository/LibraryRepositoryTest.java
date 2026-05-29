@@ -12,7 +12,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import dev.fer.library.entity.Library;
 
 @DataJpaTest
-public class LibraryRepositoryTest {
+class LibraryRepositoryTest {
   @Autowired
   private LibraryRepository libraryRepository;
 

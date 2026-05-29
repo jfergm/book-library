@@ -14,7 +14,7 @@ import dev.fer.library.entity.Library;
 import dev.fer.library.entity.Section;
 
 @DataJpaTest
-public class SectionRepositoryTest {
+class SectionRepositoryTest {
   @Autowired
   private SectionRepository sectionRepository;
 

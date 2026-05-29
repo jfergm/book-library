@@ -32,7 +32,7 @@ import dev.fer.library.repository.LoanRepository;
 import dev.fer.library.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class LoanServiceTest {
+class LoanServiceTest {
   @Mock
   private LoanRepository loanRepository;
 

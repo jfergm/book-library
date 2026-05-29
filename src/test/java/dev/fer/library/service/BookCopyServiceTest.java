@@ -32,7 +32,7 @@ import dev.fer.library.repository.BookRepository;
 import dev.fer.library.repository.ShelfRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class BookCopyServiceTest {
+class BookCopyServiceTest {
   
   @Mock
   BookCopyRepository bookCopyRepository;

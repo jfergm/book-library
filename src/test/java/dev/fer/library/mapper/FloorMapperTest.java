@@ -14,7 +14,7 @@ import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Library;
 
-public class FloorMapperTest {
+class FloorMapperTest {
   private FloorMapper floorMapper;
 
   @BeforeEach

@@ -26,7 +26,7 @@ import dev.fer.library.mapper.AuthorMapper;
 import dev.fer.library.repository.AuthorRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthorServiceTest {
+class AuthorServiceTest {
   AuthorService authorService;
 
   @Mock

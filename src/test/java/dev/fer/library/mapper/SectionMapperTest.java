@@ -16,7 +16,7 @@ import dev.fer.library.entity.Library;
 import dev.fer.library.entity.Section;
 import dev.fer.library.exception.BadRequestException;
 
-public class SectionMapperTest {
+class SectionMapperTest {
   private SectionMapper sectionMapper;
 
   @BeforeEach

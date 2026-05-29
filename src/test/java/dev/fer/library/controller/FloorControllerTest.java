@@ -41,7 +41,7 @@ import static org.hamcrest.Matchers.*;
 @WebMvcTest(FloorController.class)
 @Import(SecurityConfig.class)
 @WithMockUser
-public class FloorControllerTest {
+class FloorControllerTest {
   @Autowired
   MockMvc mockMvc;
 

@@ -41,7 +41,7 @@ import dev.fer.library.utils.TestUtils;
 @WebMvcTest(BookCopyController.class)
 @Import(SecurityConfig.class)
 @WithMockUser
-public class BookCopyControllerTest {
+class BookCopyControllerTest {
   @Autowired
   MockMvc mockMvc;
 

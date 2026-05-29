@@ -16,7 +16,7 @@ import dev.fer.library.entity.Section;
 import dev.fer.library.entity.Shelf;
 
 @DataJpaTest
-public class ShelfRepositoryTest {
+class ShelfRepositoryTest {
   @Autowired
   ShelfRepository shelfRepository;
 

@@ -31,7 +31,7 @@ import dev.fer.library.repository.FloorRepository;
 import dev.fer.library.repository.SectionRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class SectionServiceTest {
+class SectionServiceTest {
   @Mock
   private SectionRepository sectionRepository;
 

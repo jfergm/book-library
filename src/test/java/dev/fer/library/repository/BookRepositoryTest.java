@@ -13,7 +13,7 @@ import dev.fer.library.entity.Author;
 import dev.fer.library.entity.Book;
 
 @DataJpaTest
-public class BookRepositoryTest {
+class BookRepositoryTest {
   @Autowired
   private BookRepository bookRepository;
 

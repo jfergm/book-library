@@ -14,7 +14,7 @@ import dev.fer.library.entity.Author;
 import dev.fer.library.entity.Book;
 import dev.fer.library.exception.BadRequestException;
 
-public class BookMapperTest {
+class BookMapperTest {
   BookMapper mapper = new BookMapper();
 
   @Test

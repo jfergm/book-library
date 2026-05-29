@@ -8,7 +8,7 @@ import dev.fer.library.dto.response.UserResponse;
 import dev.fer.library.entity.User;
 import dev.fer.library.enums.UserRole;
 
-public class UserMapperTest {
+class UserMapperTest {
   UserMapper userMapper = new UserMapper();
 
   @Test

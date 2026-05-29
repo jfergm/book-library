@@ -29,7 +29,7 @@ import dev.fer.library.repository.FloorRepository;
 import dev.fer.library.repository.LibraryRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class FloorServiceTest {
+class FloorServiceTest {
 
   @Mock
   private FloorRepository floorRepository;

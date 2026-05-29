@@ -41,7 +41,7 @@ import dev.fer.library.utils.TestUtils;
 @WebMvcTest(LoanController.class)
 @Import(SecurityConfig.class)
 @WithMockUser
-public class LoanControllerTest {
+class LoanControllerTest {
   @Autowired
   private MockMvc mockMvc;
 

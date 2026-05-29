@@ -15,7 +15,7 @@ import dev.fer.library.entity.Bookcase;
 import dev.fer.library.entity.Section;
 import dev.fer.library.exception.BadRequestException;
 
-public class BookcaseMapperTest {
+class BookcaseMapperTest {
   private BookcaseMapper mapper = new BookcaseMapper();
 
   private List<Bookcase> bookcases;

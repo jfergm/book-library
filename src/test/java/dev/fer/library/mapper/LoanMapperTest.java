@@ -16,7 +16,7 @@ import dev.fer.library.entity.User;
 import dev.fer.library.enums.LoanStatus;
 import dev.fer.library.exception.BadRequestException;
 
-public class LoanMapperTest {
+class LoanMapperTest {
   private LoanMapper mapper = new LoanMapper();
   
   private Date date = new Date(1779256800000L); // 2026 may 20

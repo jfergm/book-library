@@ -18,7 +18,7 @@ import dev.fer.library.entity.Shelf;
 import dev.fer.library.enums.BookCopyStatus;
 
 @DataJpaTest
-public class BookCopyRepositoryTest {
+class BookCopyRepositoryTest {
   @Autowired
   BookCopyRepository bookCopyRepository;
 

@@ -15,7 +15,7 @@ import dev.fer.library.entity.Bookcase;
 import dev.fer.library.entity.Shelf;
 import dev.fer.library.exception.BadRequestException;
 
-public class ShelfMapperTest {
+class ShelfMapperTest {
   ShelfMapper mapper = new ShelfMapper();
 
   private List<Shelf> shelves;

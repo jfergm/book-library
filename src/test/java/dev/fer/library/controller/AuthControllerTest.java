@@ -29,7 +29,7 @@ import dev.fer.library.utils.TestUtils;
 
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
-public class AuthControllerTest {
+class AuthControllerTest {
   @Autowired
   MockMvc mockMvc;
 

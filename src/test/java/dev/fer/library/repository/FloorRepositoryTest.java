@@ -13,7 +13,7 @@ import dev.fer.library.entity.Floor;
 import dev.fer.library.entity.Library;
 
 @DataJpaTest
-public class FloorRepositoryTest {
+class FloorRepositoryTest {
   @Autowired
   private FloorRepository floorRepository;
 

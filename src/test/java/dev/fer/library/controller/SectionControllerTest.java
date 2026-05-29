@@ -40,7 +40,7 @@ import dev.fer.library.utils.TestUtils;
 @WebMvcTest(SectionController.class)
 @Import(SecurityConfig.class)
 @WithMockUser
-public class SectionControllerTest {
+class SectionControllerTest {
   @Autowired
   MockMvc mockMvc;
 

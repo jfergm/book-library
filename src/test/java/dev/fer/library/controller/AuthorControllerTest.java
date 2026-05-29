@@ -42,7 +42,7 @@ import java.util.List;
 @WebMvcTest(AuthorController.class)
 @Import(SecurityConfig.class)
 @WithMockUser
-public class AuthorControllerTest {
+class AuthorControllerTest {
   @Autowired
   MockMvc mockMvc;
 

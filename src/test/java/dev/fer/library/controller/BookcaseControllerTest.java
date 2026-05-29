@@ -43,7 +43,7 @@ import dev.fer.library.utils.TestUtils;
 @WebMvcTest(BookcaseController.class)
 @Import(SecurityConfig.class)
 @WithMockUser
-public class BookcaseControllerTest {
+class BookcaseControllerTest {
   @Autowired
   MockMvc mockMvc;
 

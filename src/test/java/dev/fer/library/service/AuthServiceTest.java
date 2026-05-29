@@ -29,7 +29,7 @@ import dev.fer.library.repository.UserRepository;
 import dev.fer.library.security.CustomUserDetails;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+class AuthServiceTest {
   AuthService authService;
 
   @Mock

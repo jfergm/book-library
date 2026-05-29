@@ -30,7 +30,7 @@ import dev.fer.library.repository.BookcaseRepository;
 import dev.fer.library.repository.ShelfRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class ShelfServiceTest {
+class ShelfServiceTest {
   @Mock
   ShelfRepository shelfRepository;
 

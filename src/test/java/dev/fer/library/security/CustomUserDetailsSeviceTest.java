@@ -21,7 +21,7 @@ import dev.fer.library.enums.UserRole;
 import dev.fer.library.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class CustomUserDetailsSeviceTest {
+class CustomUserDetailsSeviceTest {
   @InjectMocks
   CustomUserDetailsService userDetailsService;
 

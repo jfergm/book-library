@@ -8,7 +8,7 @@ import dev.fer.library.entity.User;
 import dev.fer.library.enums.UserRole;
 import dev.fer.library.security.CustomUserDetails;
 
-public class JwtServiceTest {
+class JwtServiceTest {
   JwtService jwtService = new JwtService("SecretjwttestSecretjwttestSecretjwttest123456", 86400000L);
 
   private CustomUserDetails user = 

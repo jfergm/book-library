@@ -12,7 +12,7 @@ import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.entity.Author;
 
-public class AuthorMapperTest {
+class AuthorMapperTest {
   AuthorMapper mapper = new AuthorMapper();
 
   private List<Author> authors;

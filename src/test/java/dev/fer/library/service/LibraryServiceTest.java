@@ -27,7 +27,7 @@ import dev.fer.library.repository.LibraryRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class LibraryServiceTest {
+class LibraryServiceTest {
 
   @Mock
   LibraryRepository libraryRepository;

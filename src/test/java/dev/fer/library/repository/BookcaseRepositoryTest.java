@@ -15,7 +15,7 @@ import dev.fer.library.entity.Library;
 import dev.fer.library.entity.Section;
 
 @DataJpaTest
-public class BookcaseRepositoryTest {
+class BookcaseRepositoryTest {
   @Autowired
   BookcaseRepository bookcaseRepository;
 

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import dev.fer.library.entity.User;
 import dev.fer.library.enums.UserRole;
 
-public class CustomUserDetailsTest {
+class CustomUserDetailsTest {
   @Test
   void shouldConvertUserToUserDetails() {
     User user = new User(1L, "example@email.com", "password123", UserRole.ADMIN);

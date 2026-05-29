@@ -38,7 +38,7 @@ import java.util.List;
 @WebMvcTest(LibraryController.class)
 @Import(SecurityConfig.class)
 @WithMockUser
-public class LibraryControllerTest {
+class LibraryControllerTest {
   @Autowired
   MockMvc mockMvc;
 
