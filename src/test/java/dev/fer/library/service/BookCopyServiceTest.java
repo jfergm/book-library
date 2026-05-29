@@ -255,8 +255,9 @@ class BookCopyServiceTest {
     );
 
     Optional<BookCopy> entity = bookCopyService.getEntity(1L);
-    assertThat(entity).isPresent();
-    assertThat(entity).contains(bookCopy);
+    assertThat(entity)
+      .isPresent()
+      .contains(bookCopy);
 
     verify(bookCopyRepository).findById(1L);
   }
