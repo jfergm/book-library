@@ -89,7 +89,7 @@ class SectionServiceTest {
 
     List<SectionResponse> secs = sectionService.getSections();
 
-    assertThat(secs.size()).isEqualTo(3);
+    assertThat(secs).hasSize(3);
     verify(sectionRepository).findAll();
   }
 

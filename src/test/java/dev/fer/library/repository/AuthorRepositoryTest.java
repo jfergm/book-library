@@ -43,7 +43,7 @@ class AuthorRepositoryTest {
   void shouldReturnNullWhenNotExist() {
     Optional<Author> missed = authorRepository.findById(999L);
     
-    assertThat(missed.isEmpty()).isTrue();
+    assertThat(missed).isEmpty();
   }
 
   @Test

@@ -50,7 +50,7 @@ class BookRepositoryTest {
   void shouldReturnNullWhenNotExist() {
     Optional<Book> retrieved = bookRepository.findById(999L);
     
-    assertThat(retrieved.isEmpty()).isTrue();
+    assertThat(retrieved).isEmpty();
   }
 
   @Test

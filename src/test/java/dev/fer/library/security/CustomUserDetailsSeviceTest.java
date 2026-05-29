@@ -38,7 +38,7 @@ class CustomUserDetailsSeviceTest {
 
     assertThat(userDetails.getUsername()).isEqualTo("example@email.com");
     assertThat(userDetails.getPassword()).isEqualTo("password123");
-    assertThat(userDetails.getAuthorities().size()).isEqualTo(1);
+    assertThat(userDetails.getAuthorities()).hasSize(1);
     
     verify(userRepository).findByEmail(anyString());
   }

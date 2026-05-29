@@ -255,8 +255,8 @@ class BookCopyServiceTest {
     );
 
     Optional<BookCopy> entity = bookCopyService.getEntity(1L);
-    assertThat(entity.isPresent()).isTrue();
-    assertThat(entity.get()).isEqualTo(bookCopy);
+    assertThat(entity).isPresent();
+    assertThat(entity).contains(bookCopy);
 
     verify(bookCopyRepository).findById(1L);
   }
@@ -266,7 +266,7 @@ class BookCopyServiceTest {
     when(bookCopyRepository.findById(1L)).thenReturn(Optional.empty());
 
     Optional<BookCopy> entity = bookCopyService.getEntity(1L);
-    assertThat(entity.isEmpty()).isTrue();
+    assertThat(entity).isEmpty();
 
     verify(bookCopyRepository).findById(1L);
   }

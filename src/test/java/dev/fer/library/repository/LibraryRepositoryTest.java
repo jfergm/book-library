@@ -46,7 +46,7 @@ class LibraryRepositoryTest {
   void shouldReturnNullWhenNotExist() {
     Optional<Library> library = libraryRepository.findById(999L);
     
-    assertThat(library.isEmpty()).isTrue();
+    assertThat(library).isEmpty();
   }
 
   @Test

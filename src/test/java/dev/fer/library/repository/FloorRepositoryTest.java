@@ -51,7 +51,7 @@ class FloorRepositoryTest {
   void shouldReturnNullWhenNotExist() {
     Optional<Floor> floor = floorRepository.findById(999L);
     
-    assertThat(floor.isEmpty()).isTrue();
+    assertThat(floor).isEmpty();
   }
 
   @Test

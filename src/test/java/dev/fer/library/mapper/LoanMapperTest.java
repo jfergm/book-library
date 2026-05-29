@@ -42,7 +42,7 @@ class LoanMapperTest {
 
     List<LoanResponse> responseList = mapper.toResponseList(loans);
 
-    assertThat(responseList.size()).isEqualTo(1);
+    assertThat(responseList).hasSize(1);
   }
 
   @Test

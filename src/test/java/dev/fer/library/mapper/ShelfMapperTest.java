@@ -47,7 +47,7 @@ class ShelfMapperTest {
   void shouldConvertToResponseList() {
     List<ShelfResponse> shelvesResponse = mapper.toResponseList(shelves);
 
-    assertThat(shelvesResponse.size()).isEqualTo(3);
+    assertThat(shelvesResponse).hasSize(3);
     assertThat(shelvesResponse.get(0).id()).isEqualTo(1L);
     assertThat(shelvesResponse.get(1).id()).isEqualTo(2L);
     assertThat(shelvesResponse.get(2).id()).isEqualTo(3L);

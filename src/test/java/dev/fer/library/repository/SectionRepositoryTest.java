@@ -60,7 +60,7 @@ class SectionRepositoryTest {
   void shouldReturnNullWhenNotExist() {
     Optional<Section> section = sectionRepository.findById(999L);
     
-    assertThat(section.isEmpty()).isTrue();
+    assertThat(section).isEmpty();
   }
 
   @Test

@@ -131,7 +131,7 @@ class LoanServiceTest {
 
     List<LoanResponse> response = loanService.getLoans();
 
-    assertThat(response.size()).isEqualTo(3);
+    assertThat(response).hasSize(3);
 
     verify(loanRepository).findAll();
   }

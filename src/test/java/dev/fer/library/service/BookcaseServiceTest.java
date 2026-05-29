@@ -84,7 +84,7 @@ class BookcaseServiceTest {
 
     List<BookcaseResponse> bookcasesResponse = bookcaseService.getBookcases();
 
-    assertThat(bookcasesResponse.size()).isEqualTo(3);
+    assertThat(bookcasesResponse).hasSize(3);
 
     verify(bookcaseRepository).findAll();
   }

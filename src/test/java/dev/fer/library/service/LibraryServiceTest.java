@@ -78,7 +78,7 @@ class LibraryServiceTest {
     List<LibraryResponse> libs = libraryService.getLibraries();
 
 
-    assertThat(libs.size()).isEqualTo(3);
+    assertThat(libs).hasSize(3);
     assertThat(libs.getFirst().id()).isEqualTo(librariesResponse.getFirst().id());
     verify(libraryRepository).findAll();
   }

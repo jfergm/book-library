@@ -73,7 +73,7 @@ class AuthorServiceTest {
 
     List<AuthorResponse> authorsList = authorService.getAuthors();
     
-    assertThat(authorsList.size()).isEqualTo(3);
+    assertThat(authorsList).hasSize(3);
     assertThat(authorsList.get(0).id()).isEqualTo(1L);
     assertThat(authorsList.get(1).id()).isEqualTo(2L);
     assertThat(authorsList.get(2).id()).isEqualTo(3L);

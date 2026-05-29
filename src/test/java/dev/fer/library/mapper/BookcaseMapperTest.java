@@ -43,7 +43,7 @@ class BookcaseMapperTest {
   void shouldConvertToResponseList() {
     List<BookcaseResponse> bookcasesResponse = mapper.toResponseList(bookcases);
 
-    assertThat(bookcasesResponse.size()).isEqualTo(3);
+    assertThat(bookcasesResponse).hasSize(3);
     assertThat(bookcasesResponse.get(0).id()).isEqualTo(1L);
     assertThat(bookcasesResponse.get(1).id()).isEqualTo(2L);
     assertThat(bookcasesResponse.get(2).id()).isEqualTo(3L);

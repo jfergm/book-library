@@ -85,7 +85,7 @@ class ShelfServiceTest {
 
     List<ShelfResponse> res = shelfService.getShelves();
 
-    assertThat(res.size()).isEqualTo(3);
+    assertThat(res).hasSize(3);
     verify(shelfRepository).findAll();
   }
 

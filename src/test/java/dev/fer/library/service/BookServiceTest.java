@@ -83,7 +83,7 @@ class BookServiceTest {
 
     List<BookResponse> books = bookService.getBooks();
 
-    assertThat(books.size()).isEqualTo(3);
+    assertThat(books).hasSize(3);
 
     verify(bookRepository).findAll();
   }

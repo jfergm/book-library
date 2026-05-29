@@ -84,7 +84,7 @@ class FloorServiceTest {
 
     List<FloorResponse> fs = floorService.getFloors();
 
-    assertThat(fs.size()).isEqualTo(4);
+    assertThat(fs).hasSize(4);
     verify(floorRepository).findAll();
   }
 

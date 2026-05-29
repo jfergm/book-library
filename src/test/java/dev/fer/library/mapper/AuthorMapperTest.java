@@ -39,7 +39,7 @@ class AuthorMapperTest {
   void shouldConvertToResponseList() {
     List<AuthorResponse> responseList = mapper.toResponseList(authors);
 
-    assertThat(responseList.size()).isEqualTo(3);
+    assertThat(responseList).hasSize(3);
     assertThat(responseList.get(0).id()).isEqualTo(1L);
     assertThat(responseList.get(1).id()).isEqualTo(2L);
     assertThat(responseList.get(2).id()).isEqualTo(3L);
