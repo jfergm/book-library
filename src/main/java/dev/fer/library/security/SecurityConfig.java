@@ -31,10 +31,10 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 
     http
-      .csrf(csrf -> csrf.disable())
+      .csrf(csrf -> csrf.disable()) // Disabled because API uses JWT (stateless authentication)
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/auth/*").permitAll()
-        .anyRequest().authenticated() // Allow access to all endpoints
+        .anyRequest().authenticated() // Allow access to all endpoints just for auth users
       )
       .authenticationProvider(authenticationProvider())
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
