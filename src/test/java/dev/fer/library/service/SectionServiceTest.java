@@ -117,8 +117,9 @@ class SectionServiceTest {
   void shouldThrowWhenCreateWithInvlidLibrary() {
     when(floorRepository.findById(1L)).thenReturn(Optional.empty());
 
+    SectionRequest request = new SectionRequest(1L, "lit", "Literature", "");
     assertThrows(BadRequestException.class, () -> sectionService.createSection(
-      new SectionRequest(1L, "lit", "Literature", "")));
+      request));
 
     verify(floorRepository).findById(1L);
     verify(sectionRepository, times(0)).save(any(Section.class));
@@ -170,12 +171,10 @@ class SectionServiceTest {
   void shouldThrowNotFoundWhenInvalidSection() {
     when(sectionRepository.findById(1L)).thenReturn(Optional.empty());
 
+    SectionUpdateRequest request =  new SectionUpdateRequest(2L, "sc", "Science", "Description");
     assertThrows(
       SectionNotFoundException.class, 
-      () -> sectionService.updateSection(
-        1L, 
-        new SectionUpdateRequest(2L, "sc", "Science", "Description")
-      )
+      () -> sectionService.updateSection(1L, request)
     );
 
     verify(sectionRepository).findById(1L);
@@ -188,7 +187,8 @@ class SectionServiceTest {
     when(sectionRepository.findById(1L)).thenReturn(Optional.of(sections.getFirst()));
     when(floorRepository.findById(2L)).thenReturn(Optional.empty());
 
-    assertThrows(BadRequestException.class, () -> sectionService.updateSection(1L, new SectionUpdateRequest(2L, "sc", "Science", "Description")));
+    SectionUpdateRequest request = new SectionUpdateRequest(2L, "sc", "Science", "Description");
+    assertThrows(BadRequestException.class, () -> sectionService.updateSection(1L, request));
 
     verify(sectionRepository).findById(1L);
     verify(floorRepository).findById(anyLong());

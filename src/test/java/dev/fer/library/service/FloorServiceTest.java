@@ -103,7 +103,8 @@ class FloorServiceTest {
   void shouldThrowWhenCreateWithInvlidLibrary() {
     when(libraryRepository.findById(1L)).thenReturn(Optional.empty());
 
-    assertThrows(BadRequestException.class, () -> floorService.createFloor(new FloorRequest(1L, "1A", "Description")));
+    FloorRequest request = new FloorRequest(1L, "1A", "Description");
+    assertThrows(BadRequestException.class, () -> floorService.createFloor(request));
     verify(libraryRepository).findById(1L);
     verify(floorRepository, times(0)).save(any(Floor.class));
     
@@ -127,10 +128,10 @@ class FloorServiceTest {
   void shouldThrowWhenUpdateInvalidFloor() {
     when(floorRepository.findById(1L)).thenReturn(Optional.empty());
 
-    
+    FloorUpdateRequest request = new FloorUpdateRequest("1A", "New Description");
     assertThrows(
       FloorNotFoundException.class,
-      () -> floorService.updateFloor(1L, new FloorUpdateRequest("1A", "New Description"))
+      () -> floorService.updateFloor(1L, request)
     );
 
     verify(floorRepository).findById(1L);

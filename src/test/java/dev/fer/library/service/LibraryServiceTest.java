@@ -111,8 +111,9 @@ class LibraryServiceTest {
   void shouldThrowWhenUpdateInvalidLibraryID() {
     when(libraryRepository.findById(1L)).thenReturn(Optional.empty());
 
+    LibraryRequest request = new LibraryRequest("Library");
     assertThrows(LibraryNotFoundException.class, 
-      () -> libraryService.updateLibrary(1L, new LibraryRequest("Library")));
+      () -> libraryService.updateLibrary(1L, request));
     
     verify(libraryRepository).findById(anyLong());
     verify(libraryRepository, times(0)).save(any(Library.class));

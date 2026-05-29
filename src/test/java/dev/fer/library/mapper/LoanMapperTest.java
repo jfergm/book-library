@@ -75,8 +75,9 @@ class LoanMapperTest {
       datePlus7Days,
       ""
     );
-
-    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, loan.getUser(), loan.getBookCopy()));
+    User user = loan.getUser();
+    BookCopy bookCopy = loan.getBookCopy();
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, user, bookCopy));
   }
 
   @Test
@@ -89,7 +90,9 @@ class LoanMapperTest {
       ""
     );
 
-    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, loan.getUser(), loan.getBookCopy()));
+    User user = loan.getUser();
+    BookCopy bookCopy = loan.getBookCopy();
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, user, bookCopy));
   }
 
   @Test
@@ -102,7 +105,9 @@ class LoanMapperTest {
       ""
     );
 
-    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, loan.getUser(), loan.getBookCopy()));
+    User user = loan.getUser();
+    BookCopy bookCopy = loan.getBookCopy();
+    assertThrows(BadRequestException.class, () -> mapper.toEntity(request, user, bookCopy));
   }
 
   @Test
