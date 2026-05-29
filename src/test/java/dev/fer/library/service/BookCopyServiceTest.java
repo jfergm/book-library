@@ -67,13 +67,13 @@ class BookCopyServiceTest {
       Optional.of(bookCopy)
     );
 
-    BookCopyResponse bookCopy = bookCopyService.getBookCopy(1L);
+    BookCopyResponse bookCopyResponse = bookCopyService.getBookCopy(1L);
 
-    assertThat(bookCopy.id()).isEqualTo(1L);
-    assertThat(bookCopy.bookId()).isEqualTo(1L);
-    assertThat(bookCopy.shelfId()).isEqualTo(1L);
-    assertThat(bookCopy.code()).isEqualTo("BK123");
-    assertThat(bookCopy.status()).isEqualTo("AVAILABLE");
+    assertThat(bookCopyResponse.id()).isEqualTo(1L);
+    assertThat(bookCopyResponse.bookId()).isEqualTo(1L);
+    assertThat(bookCopyResponse.shelfId()).isEqualTo(1L);
+    assertThat(bookCopyResponse.code()).isEqualTo("BK123");
+    assertThat(bookCopyResponse.status()).isEqualTo("AVAILABLE");
 
     verify(bookCopyRepository).findById(1L);
   }

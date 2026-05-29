@@ -81,9 +81,9 @@ class BookServiceTest {
   void shouldReturnBookList() {
     when(bookRepository.findAll()).thenReturn(books);
 
-    List<BookResponse> books = bookService.getBooks();
+    List<BookResponse> booksResponse = bookService.getBooks();
 
-    assertThat(books).hasSize(3);
+    assertThat(booksResponse).hasSize(3);
 
     verify(bookRepository).findAll();
   }
