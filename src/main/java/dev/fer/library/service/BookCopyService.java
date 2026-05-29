@@ -87,7 +87,7 @@ public class BookCopyService {
     if (request.shelfId() != null) {
       shelf = shelfRepository
         .findById(request.shelfId())
-        .orElseThrow(() -> new BadRequestException());
+        .orElseThrow(BadRequestException::new);
     }
     
     BookCopy updated = 

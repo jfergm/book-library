@@ -38,7 +38,7 @@ public class LoanService {
   }
     
   public LoanResponse getLoan(Long id) {
-    Loan loan = loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException());
+    Loan loan = loanRepository.findById(id).orElseThrow(LoanNotFoundException::new);
 
     return loanMapper.toResponse(loan);
   }
@@ -63,7 +63,7 @@ public class LoanService {
   }
 
   public LoanResponse cancelLoan(long id) {
-    Loan loan = loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException());
+    Loan loan = loanRepository.findById(id).orElseThrow(LoanNotFoundException::new);
 
     if (loan.getStatus() == LoanStatus.CLOSED) {
       throw new BadRequestException();
@@ -75,7 +75,7 @@ public class LoanService {
   }
 
   public LoanResponse closeLoan(long id) {
-    Loan loan = loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException());
+    Loan loan = loanRepository.findById(id).orElseThrow(LoanNotFoundException::new);
 
     if (loan.getStatus() == LoanStatus.CANCELED) {
       throw new BadRequestException();
