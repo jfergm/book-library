@@ -5,8 +5,11 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import dev.fer.library.dto.request.LibraryRequest;
+import dev.fer.library.dto.response.LibraryResponse;
 import dev.fer.library.entity.Library;
 import dev.fer.library.exception.LibraryNotFoundException;
+import dev.fer.library.mapper.LibraryMapper;
 import dev.fer.library.repository.LibraryRepository;
 
 @Service
@@ -14,21 +17,53 @@ public class LibraryService {
 
   private LibraryRepository libraryRepository;
 
-  protected LibraryService(LibraryRepository libraryRepository) {{
-    this.libraryRepository = libraryRepository;
-  }}
+  private LibraryMapper libraryMapper;
 
-  public Library getLibaryByID(Long id) {
+  protected LibraryService(LibraryRepository libraryRepository, LibraryMapper libraryMapper) {
+    this.libraryRepository = libraryRepository;
+    this.libraryMapper = libraryMapper;
+  }
+
+  public LibraryResponse getLibaryByID(Long id) {
     Optional<Library> library = libraryRepository.findById(id);
 
     if (library.isEmpty()) {
       throw new LibraryNotFoundException();
     }
 
-    return library.get();
+    return libraryMapper.toResponse(library.get());
   }
 
-  public List<Library> getLibraries() {
-    return (List<Library>) libraryRepository.findAll();
+  public List<LibraryResponse> getLibraries() {
+    return libraryMapper.toResponseList((List<Library>) libraryRepository.findAll());
+  }
+
+  public LibraryResponse createLibrary(LibraryRequest libraryRequest) {
+    Library library = libraryMapper.toEntity(libraryRequest);
+
+    return libraryMapper.toResponse(libraryRepository.save(library));
+  }
+
+  public LibraryResponse updateLibrary(Long id, LibraryRequest update) {
+    Optional<Library> library = libraryRepository.findById(id);
+
+    if (library.isEmpty()) {
+      throw new LibraryNotFoundException();
+    }
+
+    Library updated = new Library(library.get().getId(), update.name());
+
+    libraryRepository.save(updated);
+
+    return libraryMapper.toResponse(updated);
+  }
+
+  public void deleteLibrary(Long id) {
+    if (libraryRepository.existsById(id)) {
+      libraryRepository.deleteById(id);
+      return;
+    }
+
+    throw new LibraryNotFoundException();
   }
 }

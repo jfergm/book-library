@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "jwt.expiration.millis",
+    "type": "java.lang.Long",
+    "description": "to use with the exipresat in jwt"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "The secret used for sign the jws"
+  }
+]}
