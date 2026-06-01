@@ -271,4 +271,22 @@ class BookCopyServiceTest {
 
     verify(bookCopyRepository).findById(1L);
   }
+
+  @Test
+  void shouldReturnBookWithProcessingStatus() {
+    when(bookCopyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    BookCopy processing = bookCopyService.toProcessing(bookCopy);
+
+    assertThat(processing.getStatus()).isEqualTo(BookCopyStatus.PROCESSING);
+  }
+
+  @Test
+  void shouldReturnBookWithCheckedOutStatus() {
+    when(bookCopyRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+    BookCopy processing = bookCopyService.checkOut(bookCopy);
+
+    assertThat(processing.getStatus()).isEqualTo(BookCopyStatus.CHECKED_OUT);
+  }
 }

@@ -258,6 +258,7 @@ class LoanServiceTest {
 
     verify(loanRepository).findById(1L);
     verify(loanRepository).save(any(Loan.class));
+    verify(bookCopyService).toProcessing(any());
   }
 
   @Test
@@ -305,6 +306,7 @@ class LoanServiceTest {
 
     verify(loanRepository).findById(1L);
     verify(loanRepository).save(any(Loan.class));
+    verify(bookCopyService).toProcessing(any());
   }
 
   @Test

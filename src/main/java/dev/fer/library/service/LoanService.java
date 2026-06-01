@@ -72,9 +72,9 @@ public class LoanService {
       throw new BadRequestException();
     }
 
-    Loan canceled = loanMapper.toCancelEntity(loan);
+    loan.cancel();
     bookCopyService.toProcessing(loan.getBookCopy());
-    return loanMapper.toResponse(loanRepository.save(canceled));
+    return loanMapper.toResponse(loanRepository.save(loan));
   }
 
   @Transactional
@@ -85,8 +85,8 @@ public class LoanService {
       throw new BadRequestException();
     }
 
-    Loan closed = loanMapper.toCloseEntity(loan, new Date());
+    loan.close(new Date());
     bookCopyService.toProcessing(loan.getBookCopy());
-    return loanMapper.toResponse(loanRepository.save(closed));
+    return loanMapper.toResponse(loanRepository.save(loan));
   }
 }
