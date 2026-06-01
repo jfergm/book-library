@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import dev.fer.library.dto.request.LoanRequest;
 import dev.fer.library.dto.response.LoanResponse;
@@ -49,6 +50,7 @@ public class LoanService {
     return loanMapper.toResponseList(loans);
   }
 
+  @Transactional
   public LoanResponse createLoan(LoanRequest request) {
     User user = userrRepository.findById(request.userId()).orElseThrow(() -> new BadRequestException("invalid user"));
     BookCopy bookCopy = bookCopyService.getEntity(request.bookCopyId()).orElseThrow(() -> new BadRequestException("invalid book copy"));
@@ -62,6 +64,7 @@ public class LoanService {
     return loanMapper.toResponse(loanRepository.save(newLoan));
   }
 
+  @Transactional
   public LoanResponse cancelLoan(long id) {
     Loan loan = loanRepository.findById(id).orElseThrow(LoanNotFoundException::new);
 
@@ -74,6 +77,7 @@ public class LoanService {
     return loanMapper.toResponse(loanRepository.save(canceled));
   }
 
+  @Transactional
   public LoanResponse closeLoan(long id) {
     Loan loan = loanRepository.findById(id).orElseThrow(LoanNotFoundException::new);
 
