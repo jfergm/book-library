@@ -114,4 +114,11 @@ public class BookCopyService {
     BookCopy checkedOut = bookCopyMapper.toCheckedOutEntity(bookCopy);
     return bookCopyRepository.save(checkedOut);
   }
+
+  public BookCopy toProcessing(BookCopy bookCopy) {
+    BookCopy toProcess = bookCopyMapper.toProcessingEntity(bookCopy);
+
+    return bookCopyRepository.save(toProcess);
+  }
+
 }

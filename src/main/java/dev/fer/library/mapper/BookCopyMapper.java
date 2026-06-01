@@ -74,5 +74,15 @@ public class BookCopyMapper {
       BookCopyStatus.CHECKED_OUT
     );
   }
+
+  public BookCopy toProcessingEntity(BookCopy bookCopy) {
+    return new BookCopy(
+      bookCopy.getId(),
+      bookCopy.getBook(),
+      bookCopy.getShelf(),
+      bookCopy.getCode(), 
+      BookCopyStatus.PROCESSING
+    );
+  }
 }
 

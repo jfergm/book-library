@@ -70,7 +70,7 @@ public class LoanService {
     }
 
     Loan canceled = loanMapper.toCancelEntity(loan);
-
+    bookCopyService.toProcessing(loan.getBookCopy());
     return loanMapper.toResponse(loanRepository.save(canceled));
   }
 
@@ -82,7 +82,7 @@ public class LoanService {
     }
 
     Loan closed = loanMapper.toCloseEntity(loan, new Date());
-
+    bookCopyService.toProcessing(loan.getBookCopy());
     return loanMapper.toResponse(loanRepository.save(closed));
   }
 }
