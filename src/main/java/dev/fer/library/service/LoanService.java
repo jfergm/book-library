@@ -65,7 +65,7 @@ public class LoanService {
   public LoanResponse cancelLoan(long id) {
     Loan loan = loanRepository.findById(id).orElseThrow(LoanNotFoundException::new);
 
-    if (loan.getStatus() == LoanStatus.CLOSED) {
+    if (loan.getStatus() != LoanStatus.ACTIVE) {
       throw new BadRequestException();
     }
 
@@ -77,7 +77,7 @@ public class LoanService {
   public LoanResponse closeLoan(long id) {
     Loan loan = loanRepository.findById(id).orElseThrow(LoanNotFoundException::new);
 
-    if (loan.getStatus() == LoanStatus.CANCELED) {
+    if (loan.getStatus() != LoanStatus.ACTIVE) {
       throw new BadRequestException();
     }
 
