@@ -64,15 +64,5 @@ public class BookCopyMapper {
       bookCopy.getStatus()
     );
   }
-
-  public BookCopy toCheckedOutEntity(BookCopy bookCopy) {
-    return new BookCopy(
-      bookCopy.getId(),
-      bookCopy.getBook(),
-      bookCopy.getShelf(),
-      bookCopy.getCode(), 
-      BookCopyStatus.CHECKED_OUT
-    );
-  }
 }
 

@@ -39,4 +39,12 @@ public class BookCopy {
 
   @Enumerated(EnumType.STRING)
   private BookCopyStatus status;
+
+  public void checkOut() {
+    this.status = BookCopyStatus.CHECKED_OUT;
+  }
+
+  public void setToProcessing() {
+    this.status = BookCopyStatus.PROCESSING;
+  }
 }

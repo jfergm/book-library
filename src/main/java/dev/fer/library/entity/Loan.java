@@ -52,4 +52,13 @@ public class Loan {
 
   @Column(name = "notes")
   private String notes;
+
+  public void cancel() {
+    this.status = LoanStatus.CANCELED;
+  }
+
+  public void close(Date returnDate) {
+    this.returnDate = returnDate;
+    this.status = LoanStatus.CLOSED;
+  }
 }

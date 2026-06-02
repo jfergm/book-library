@@ -258,6 +258,7 @@ class LoanServiceTest {
 
     verify(loanRepository).findById(1L);
     verify(loanRepository).save(any(Loan.class));
+    verify(bookCopyService).toProcessing(any());
   }
 
   @Test
@@ -281,6 +282,18 @@ class LoanServiceTest {
   }
 
   @Test
+  void shouldThrowBadRequestWhenLoanStatusIsCanceled() {
+    when(loanRepository.findById(2L)).thenReturn(Optional.of(
+      new Loan(2L, null, null, baseDate, baseDate, baseDate, LoanStatus.CANCELED, null)
+    ));
+
+    assertThrows(BadRequestException.class, () -> loanService.cancelLoan(2L));
+
+    verify(loanRepository).findById(2L);
+    verify(loanRepository, times(0)).save(any(Loan.class));
+  }
+
+  @Test
   void shouldCloseLoan() {
     when(loanRepository.findById(1L)).thenReturn(Optional.of(loans.getFirst()));
     when(loanRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
@@ -293,6 +306,7 @@ class LoanServiceTest {
 
     verify(loanRepository).findById(1L);
     verify(loanRepository).save(any(Loan.class));
+    verify(bookCopyService).toProcessing(any());
   }
 
   @Test
@@ -307,6 +321,17 @@ class LoanServiceTest {
   @Test
   void shouldThrowWhenLoanIsCanceled() {
     when(loanRepository.findById(2L)).thenReturn(Optional.of(loans.get(1)));
+
+    assertThrows(BadRequestException.class, () -> loanService.closeLoan(2L));
+    verify(loanRepository).findById(2L);
+    verify(loanRepository, times(0)).save(any(Loan.class));
+  }
+
+  @Test
+  void shouldThrowWhenLoanIsClosed() {
+    when(loanRepository.findById(2L)).thenReturn(Optional.of(
+      new Loan(2L, null, null, baseDate, baseDate, baseDate, LoanStatus.CLOSED, null)
+    ));
 
     assertThrows(BadRequestException.class, () -> loanService.closeLoan(2L));
     verify(loanRepository).findById(2L);
