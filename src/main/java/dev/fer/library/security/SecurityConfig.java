@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import jakarta.servlet.DispatcherType;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -34,6 +36,7 @@ public class SecurityConfig {
       .csrf(csrf -> csrf.disable()) // Disabled because API uses JWT (stateless authentication)
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/auth/*").permitAll()
+        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll() 
         .anyRequest().authenticated() // Allow access to all endpoints just for auth users
       )
       .authenticationProvider(authenticationProvider())

@@ -79,7 +79,7 @@ class AuthControllerTest {
   @Test
   void shouldReturnTokenWhenLogin() throws Exception {
     when(authService.login(any())).thenReturn(
-      new LoginResponse("json.web.token")
+      new LoginResponse("json.web.token", 1L, "email@example.com")
     );
 
     LoginRequest request = new LoginRequest("email@example.com", "password");
@@ -90,7 +90,9 @@ class AuthControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(TestUtils.objectAsJson(request)))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.token").value("json.web.token"));
+      .andExpect(jsonPath("$.token").value("json.web.token"))
+      .andExpect(jsonPath("$.id").value("1"))
+      .andExpect(jsonPath("$.email").value("email@example.com"));
     
     verify(authService).login(any());
   }
