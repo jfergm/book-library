@@ -56,13 +56,23 @@ public class BookCopyMapper {
       throw new BadRequestException();
     }
 
-    return new BookCopy(
-      bookCopy.getId(), 
-      bookCopy.getBook(), 
-      shelf, 
-      bookCopy.getCode(), 
-      bookCopy.getStatus()
-    );
+    if (shelf == null) {
+      return new BookCopy(
+        bookCopy.getId(), 
+        bookCopy.getBook(), 
+        shelf, 
+        bookCopy.getCode(), 
+        BookCopyStatus.PROCESSING
+      );
+    } else {
+      return new BookCopy(
+        bookCopy.getId(), 
+        bookCopy.getBook(), 
+        shelf, 
+        bookCopy.getCode(), 
+        BookCopyStatus.AVAILABLE
+      );
+    }
   }
 }
 
