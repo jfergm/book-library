@@ -3,7 +3,6 @@ package dev.fer.library.service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +14,7 @@ import dev.fer.library.entity.User;
 import dev.fer.library.exception.BadRequestException;
 import dev.fer.library.mapper.UserMapper;
 import dev.fer.library.repository.UserRepository;
+import dev.fer.library.security.CustomUserDetails;
 
 @Service
 public class AuthService {
@@ -57,9 +57,9 @@ public class AuthService {
       new UsernamePasswordAuthenticationToken(request.email(), request.password())
     );
 
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
     String token = jwtService.generateToken(userDetails);
-    return new LoginResponse(token);
+    return new LoginResponse(token, userDetails.getUser().getId(), userDetails.getUsername());
   }
 }
