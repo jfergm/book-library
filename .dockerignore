@@ -1,0 +1,21 @@
+# Maven build output
+target/
+
+# Git
+.git/
+.gitignore
+
+# IDE files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker stuff (optional safety)
+docker-compose.yml
+Dockerfile
