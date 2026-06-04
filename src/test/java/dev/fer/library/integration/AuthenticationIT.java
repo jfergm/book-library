@@ -8,12 +8,17 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import dev.fer.library.dto.request.LoginRequest;
 import dev.fer.library.dto.request.UserRequest;
@@ -23,12 +28,19 @@ import dev.fer.library.enums.UserRole;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@ActiveProfiles("it")
 @AutoConfigureTestRestTemplate
+@Sql("/data.sql")
 class AuthenticationIT {
   @Autowired
   TestRestTemplate restTemplate;
   
+  @Container
+  @ServiceConnection
+  static PostgreSQLContainer postgres = new PostgreSQLContainer(
+    DockerImageName.parse("postgres:alpine3.22")
+  );
+    
   @Test
   void shouldRegisterAndLogin() {
     UserRequest request = new UserRequest("example@email.com", "password123", UserRole.USER);
@@ -55,11 +67,11 @@ class AuthenticationIT {
 
   @Test
   void shouldFail() {
-    LoginRequest failRequest = new LoginRequest("email@email.com", "badpassword");
+    LoginRequest failRequest = new LoginRequest("test@email.com", "badpassword");
     ResponseEntity<LoginResponse> failResponse = restTemplate.postForEntity("/auth/login", failRequest, LoginResponse.class);
     assertThat(failResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
-    LoginRequest successRequest = new LoginRequest("email@email.com", "password123");
+    LoginRequest successRequest = new LoginRequest("test@email.com", "password123");
     ResponseEntity<LoginResponse> successResponse = restTemplate.postForEntity("/auth/login", successRequest, LoginResponse.class);
     assertThat(successResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
