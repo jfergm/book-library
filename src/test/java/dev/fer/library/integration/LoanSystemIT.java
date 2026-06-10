@@ -42,7 +42,7 @@ class LoanSystemIT {
     @Container
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer(
-      DockerImageName.parse("postgres:alpine3.22")
+      DockerImageName.parse("postgres:16-alpine")
     );
 
   @Autowired
