@@ -8,6 +8,7 @@ import dev.fer.library.dto.request.FloorRequest;
 import dev.fer.library.dto.request.FloorUpdateRequest;
 import dev.fer.library.dto.response.FloorResponse;
 import dev.fer.library.service.FloorService;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -46,7 +47,7 @@ public class FloorController {
   }
   
   @PostMapping("")
-  public ResponseEntity<Void> createFloor(@RequestBody FloorRequest request) {
+  public ResponseEntity<Void> createFloor(@RequestBody @Valid FloorRequest request) {
     FloorResponse created = floorService.createFloor(request);
 
     URI location = ServletUriComponentsBuilder
@@ -58,7 +59,10 @@ public class FloorController {
   }
   
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateFloor(@PathVariable Long id, @RequestBody FloorUpdateRequest update) {
+  public ResponseEntity<Void> updateFloor(
+    @PathVariable Long id, 
+    @RequestBody FloorUpdateRequest update
+  ) {
       
     floorService.updateFloor(id, update);
 

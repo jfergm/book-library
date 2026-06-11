@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import dev.fer.library.dto.request.BookRequest;
 import dev.fer.library.dto.response.BookResponse;
 import dev.fer.library.service.BookService;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +44,7 @@ public class BookController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> createBook(@RequestBody BookRequest request) {
+  public ResponseEntity<Void> createBook(@RequestBody @Valid BookRequest request) {
     BookResponse created = bookService.createBook(request);
 
     URI location = ServletUriComponentsBuilder
@@ -56,7 +57,10 @@ public class BookController {
   }
   
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateBook(@PathVariable Long id, @RequestBody BookRequest request) {
+  public ResponseEntity<Void> updateBook(
+    @PathVariable Long id, 
+    @RequestBody @Valid BookRequest request
+  ) {
     bookService.updateBook(id, request);
 
     return ResponseEntity.noContent().build();

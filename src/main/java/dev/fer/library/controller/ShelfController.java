@@ -7,6 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import dev.fer.library.dto.request.ShelfRequest;
 import dev.fer.library.dto.response.ShelfResponse;
 import dev.fer.library.service.ShelfService;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ShelfController {
   }
   
   @PostMapping("")
-  public ResponseEntity<Void> createShelf(@RequestBody ShelfRequest request) {
+  public ResponseEntity<Void> createShelf(@RequestBody @Valid ShelfRequest request) {
     ShelfResponse created = shelfService.createShelf(request);
     URI location = ServletUriComponentsBuilder
       .fromCurrentRequestUri()
@@ -56,7 +57,10 @@ public class ShelfController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateShelf(@PathVariable Long id, @RequestBody ShelfRequest request) {
+  public ResponseEntity<Void> updateShelf(
+    @PathVariable Long id, 
+    @RequestBody @Valid ShelfRequest request
+  ) {
     shelfService.updateShelf(id, request);
 
     return ResponseEntity.noContent().build();

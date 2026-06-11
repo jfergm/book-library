@@ -7,6 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import dev.fer.library.dto.request.LibraryRequest;
 import dev.fer.library.dto.response.LibraryResponse;
 import dev.fer.library.service.LibraryService;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -45,7 +46,7 @@ public class LibraryController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> createLibrary(@RequestBody LibraryRequest library) {
+  public ResponseEntity<Void> createLibrary(@RequestBody @Valid LibraryRequest library) {
     LibraryResponse added = libraryService.createLibrary(library);
 
     URI location = ServletUriComponentsBuilder
@@ -57,7 +58,10 @@ public class LibraryController {
   }
   
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateLibrary(@PathVariable Long id, @RequestBody LibraryRequest update) {   
+  public ResponseEntity<Void> updateLibrary(
+    @PathVariable Long id, 
+    @RequestBody @Valid LibraryRequest update
+  ) {   
     libraryService.updateLibrary(id, update);   
     return ResponseEntity.noContent().build();
   }

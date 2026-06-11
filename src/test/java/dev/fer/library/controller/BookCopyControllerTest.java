@@ -99,6 +99,18 @@ class BookCopyControllerTest {
   }
 
   @Test
+  void shouldReturnBadRequestCreateWithInvalidData() throws Exception {
+    BookCopyRequest request = new BookCopyRequest(null);
+
+    mockMvc
+      .perform(
+        post("/book-copies")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
   void shouldReturnNotFoundWhenCreateBookCopyWithInvalidBook() throws Exception {
     when(bookCopyService.createBookCopy(any())).thenThrow(BadRequestException.class);
 
@@ -126,6 +138,18 @@ class BookCopyControllerTest {
       .andExpect(status().isNoContent());
 
     verify(bookCopyService).updateBookCopy(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateBookCopyWithInvalidData() throws Exception {
+    BookCopyUpdateRequest request = new BookCopyUpdateRequest("");
+
+    mockMvc
+      .perform(
+        patch("/book-copies/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
   }
 
   @Test

@@ -9,6 +9,7 @@ import dev.fer.library.dto.request.LoginRequest;
 import dev.fer.library.dto.request.UserRequest;
 import dev.fer.library.dto.response.LoginResponse;
 import dev.fer.library.service.AuthService;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,13 +25,13 @@ public class AuthController {
   }
   
   @PostMapping("/register")
-  public ResponseEntity<Void> register(@RequestBody UserRequest request) {
+  public ResponseEntity<Void> register(@RequestBody @Valid UserRequest request) {
     authService.register(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   @PostMapping("/login")
-  public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest login) {
+  public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest login) {
     LoginResponse response = authService.login(login);
     return ResponseEntity.ok(response);
   }

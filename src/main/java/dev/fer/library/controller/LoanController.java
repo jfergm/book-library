@@ -7,6 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import dev.fer.library.dto.request.LoanRequest;
 import dev.fer.library.dto.response.LoanResponse;
 import dev.fer.library.service.LoanService;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -40,7 +41,7 @@ public class LoanController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> createLoan(@RequestBody LoanRequest request) {
+  public ResponseEntity<Void> createLoan(@RequestBody @Valid LoanRequest request) {
     LoanResponse created = loanService.createLoan(request);
 
     URI location = ServletUriComponentsBuilder

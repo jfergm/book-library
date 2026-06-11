@@ -7,6 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import dev.fer.library.dto.request.BookcaseRequest;
 import dev.fer.library.dto.response.BookcaseResponse;
 import dev.fer.library.service.BookcaseService;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -43,7 +44,7 @@ public class BookcaseController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> createBookcase(@RequestBody BookcaseRequest request) {
+  public ResponseEntity<Void> createBookcase(@RequestBody @Valid BookcaseRequest request) {
     BookcaseResponse created = bookcaseService.createBookcase(request);
 
     URI location = ServletUriComponentsBuilder
@@ -56,7 +57,10 @@ public class BookcaseController {
   }
   
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateBookcase(@PathVariable long id, @RequestBody BookcaseRequest request) {
+  public ResponseEntity<Void> updateBookcase(
+    @PathVariable long id, 
+    @RequestBody @Valid BookcaseRequest request
+  ) {
     bookcaseService.updateBookcase(id, request);
     return ResponseEntity.noContent().build();
   }

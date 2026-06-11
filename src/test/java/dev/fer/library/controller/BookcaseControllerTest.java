@@ -120,6 +120,19 @@ class BookcaseControllerTest {
   }
 
   @Test
+  void shouldReturnBadRequestWhenCreateWithInvalidData() throws Exception {
+    BookcaseRequest req = new BookcaseRequest(null, "1A", "Bookcase 1A");
+
+    mockMvc
+      .perform(
+        post("/bookcases")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(req)))
+      .andExpect(status().isBadRequest());
+
+  }
+
+  @Test
   void shouldReturnBadRequestWhenInvalidSection() throws Exception {
     when(bookcaseService.createBookcase(any())).thenThrow(BadRequestException.class);
 
@@ -133,6 +146,19 @@ class BookcaseControllerTest {
       .andExpect(status().isBadRequest());
 
     verify(bookcaseService).createBookcase(any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateWithInvalidData() throws Exception {
+    BookcaseRequest req = new BookcaseRequest(1L, "", "Bookcase 1A");
+
+    mockMvc
+      .perform(
+        put("/bookcases/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(req)))
+      .andExpect(status().isBadRequest());
+
   }
 
   @Test

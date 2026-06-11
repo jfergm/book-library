@@ -157,6 +157,18 @@ class LoanControllerTest {
   }
 
   @Test
+  void shouldReturnBadRequestWhenCreateWithInvalidData() throws Exception {
+    LoanRequest loanRequest = new LoanRequest(null, 1L, basDate, basDate, "");
+
+    mockMvc
+      .perform(
+        post("/loans")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(loanRequest)))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
   void shouldReturnBadRequestWhenServiceThrow() throws Exception {
     when(loanService.createLoan(any())).thenThrow(BadRequestException.class);
     LoanRequest loanRequest = new LoanRequest(3L, 1L, basDate, basDate, "");

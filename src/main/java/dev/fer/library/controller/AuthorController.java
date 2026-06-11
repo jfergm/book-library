@@ -7,6 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
 import dev.fer.library.service.AuthorService;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -42,7 +43,7 @@ public class AuthorController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> createAuthor(@RequestBody AuthorRequest request) {
+  public ResponseEntity<Void> createAuthor(@RequestBody @Valid AuthorRequest request) {
 
     AuthorResponse created = authorService.createAuthor(request);
 
@@ -56,7 +57,7 @@ public class AuthorController {
   
 
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateAuthor(@PathVariable Long id, @RequestBody AuthorRequest request) {
+  public ResponseEntity<Void> updateAuthor(@PathVariable Long id, @RequestBody @Valid AuthorRequest request) {
     authorService.updateAuthor(id, request);
 
     return ResponseEntity.noContent().build();

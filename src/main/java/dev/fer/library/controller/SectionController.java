@@ -15,6 +15,8 @@ import dev.fer.library.dto.request.SectionRequest;
 import dev.fer.library.dto.request.SectionUpdateRequest;
 import dev.fer.library.dto.response.SectionResponse;
 import dev.fer.library.service.SectionService;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,7 +46,7 @@ public class SectionController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> createSection(@RequestBody SectionRequest request) {
+  public ResponseEntity<Void> createSection(@RequestBody @Valid SectionRequest request) {
     SectionResponse response = sectionService.createSection(request);
     URI location = ServletUriComponentsBuilder
       .fromCurrentRequestUri()
@@ -56,7 +58,10 @@ public class SectionController {
   }
   
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateSection(@PathVariable Long id, @RequestBody SectionUpdateRequest update) {
+  public ResponseEntity<Void> updateSection(
+    @PathVariable Long id, 
+    @RequestBody @Valid SectionUpdateRequest update
+  ) {
     sectionService.updateSection(id, update);
     return ResponseEntity.noContent().build();
   }

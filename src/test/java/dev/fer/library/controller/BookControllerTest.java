@@ -118,6 +118,18 @@ class BookControllerTest {
   }
 
   @Test
+  void shouldReturnBadRquestWhenCreateBookWithInvalidData() throws Exception {
+    BookRequest bookRequest = new BookRequest(null, "NEWISBN123", 1L);
+
+    mockMvc
+      .perform(
+        post("/books")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(bookRequest)))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
   void shouldReturnBadRequestWhenCreateBookWithInvalidAuthor() throws Exception {
     when(bookService.createBook(any())).thenThrow(BadRequestException.class);
 
@@ -145,6 +157,18 @@ class BookControllerTest {
       .andExpect(status().isNoContent());
 
     verify(bookService).updateBook(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateBookWithInvalidData() throws Exception {    
+    BookRequest request = new BookRequest("New title", "NEWISBN", null);
+    
+    mockMvc
+      .perform(
+        put("/books/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
   }
 
   @Test

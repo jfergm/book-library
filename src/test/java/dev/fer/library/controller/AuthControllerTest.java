@@ -61,6 +61,19 @@ class AuthControllerTest {
   }
 
   @Test
+  void shouldReturnBadRequestWithInvalidData() throws Exception {
+    UserRequest request = 
+      new UserRequest("bademail", "password123", UserRole.ADMIN);
+    
+    mockMvc
+      .perform(
+        post("/auth/register")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());    
+  }
+
+  @Test
   void shouldThrowRegisterUserWhenInvalidEmail() throws Exception {
     when(authService.register(any())).thenThrow(BadRequestException.class);
     UserRequest request = 
@@ -95,5 +108,18 @@ class AuthControllerTest {
       .andExpect(jsonPath("$.email").value("email@example.com"));
     
     verify(authService).login(any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenLoginWithInvalidData() throws Exception {
+    LoginRequest request = new LoginRequest("email@example.com", "pass");
+    
+    mockMvc
+      .perform(
+        post("/auth/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
+    
   }
 }
