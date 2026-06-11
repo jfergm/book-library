@@ -1,3 +1,5 @@
 package dev.fer.library.dto.request;
 
-public record BookCopyRequest (Long bookId) {}
+import jakarta.validation.constraints.NotNull;
+
+public record BookCopyRequest (@NotNull Long bookId) {}

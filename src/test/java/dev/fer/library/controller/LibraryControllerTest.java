@@ -106,6 +106,21 @@ class LibraryControllerTest {
     verify(libraryService).createLibrary(any());
   }
 
+
+  @Test
+  void shouldReturnBadRequestCreatingWithInvalidRequest() throws Exception {
+    LibraryRequest libReq = new LibraryRequest(null);
+
+    when(libraryService.createLibrary(any())).thenReturn(libraries.getFirst());
+
+    mockMvc
+      .perform(
+        post("/libraries")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(libReq)))
+      .andExpect(status().isBadRequest());
+  }
+
   @Test
   void shouldReturnNoContentWhenUpdateLibrary() throws Exception {
     when(libraryService.updateLibrary(anyLong(), any(LibraryRequest.class))).thenReturn(libraries.getFirst());
@@ -118,6 +133,20 @@ class LibraryControllerTest {
       .andExpect(status().isNoContent());
 
     verify(libraryService).updateLibrary(anyLong(), any(LibraryRequest.class));
+  }
+
+  @Test
+  void shouldReturnBadRequestUpdatingWithInvalidRequest() throws Exception {
+    LibraryRequest libReq = new LibraryRequest(null);
+
+    when(libraryService.createLibrary(any())).thenReturn(libraries.getFirst());
+
+    mockMvc
+      .perform(
+        put("/libraries/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(libReq)))
+      .andExpect(status().isBadRequest());
   }
 
   @Test

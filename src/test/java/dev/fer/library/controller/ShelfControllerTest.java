@@ -116,6 +116,14 @@ class ShelfControllerTest {
   }
 
   @Test
+  void shouldReturnBadRequestWhenCreateWithInvalidData() throws Exception {
+    ShelfRequest request = new ShelfRequest("A1", "Shelf A1", null);
+
+    mockMvc.perform(post("/shelves").contentType(MediaType.APPLICATION_JSON).content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
   void shouldReturnBadRequest() throws Exception {
     when(shelfService.createShelf(any())).thenThrow(BadRequestException.class);
 
@@ -140,6 +148,17 @@ class ShelfControllerTest {
       .andExpect(status().isNoContent());
 
     verify(shelfService).updateShelf(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateWithInvalidData() throws Exception {
+    ShelfRequest shelfRequest = new ShelfRequest("nc", "new code", null);
+
+    mockMvc
+      .perform(put("/shelves/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(shelfRequest)))
+      .andExpect(status().isBadRequest());
   }
 
   @Test

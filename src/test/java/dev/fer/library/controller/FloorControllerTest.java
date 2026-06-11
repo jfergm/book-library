@@ -101,7 +101,7 @@ class FloorControllerTest {
 
   @Test
   void shouldReturnCreatedAndLocation() throws Exception {
-    FloorRequest floorReq = new FloorRequest(1L, "1", "Description");
+    FloorRequest floorReq = new FloorRequest(1L, "1w", "Description");
 
     when(floorService.createFloor(any())).thenReturn(floors.getFirst());
 
@@ -114,6 +114,21 @@ class FloorControllerTest {
       .andExpect(header().string("Location", containsString("/floors/1")));
 
     verify(floorService).createFloor(any());
+  }
+
+  @Test
+  void shouldReturnBadRequestCreatingWithInvalidRequest() throws Exception {
+    FloorRequest floorReq = new FloorRequest(null, "1", "Description");
+
+    when(floorService.createFloor(any())).thenReturn(floors.getFirst());
+
+    mockMvc
+      .perform(
+        post("/floors")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(floorReq)))
+      .andExpect(status().isBadRequest());
+
   }
 
   @Test
@@ -140,6 +155,21 @@ class FloorControllerTest {
       .andExpect(status().isNoContent());
 
     verify(floorService).updateFloor(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestUpdatingWithInvalidRequest() throws Exception {
+    FloorUpdateRequest floorReq = new FloorUpdateRequest(null, "Description");
+
+    when(floorService.createFloor(any())).thenReturn(floors.getFirst());
+
+    mockMvc
+      .perform(
+        post("/floors")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(floorReq)))
+      .andExpect(status().isBadRequest());
+
   }
 
   @Test

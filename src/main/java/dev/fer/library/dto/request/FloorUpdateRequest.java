@@ -1,3 +1,9 @@
 package dev.fer.library.dto.request;
 
-public record FloorUpdateRequest(String code, String description) {}
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+public record FloorUpdateRequest(
+  @NotNull @Size(min = 2) String code, 
+  String description
+) {}

@@ -117,6 +117,20 @@ class SectionControllerTest {
   }
 
   @Test
+  void shouldReturnBadRequestWhenCreateWithInvalidData() throws Exception {
+    SectionRequest request = new SectionRequest(
+      null,
+      "lit",
+      "Literature",
+      "Description"
+    );
+
+    when(sectionService.createSection(any(SectionRequest.class))).thenReturn(sections.getFirst());
+    mockMvc.perform(post("/sections").contentType(MediaType.APPLICATION_JSON).content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());  
+  }
+
+  @Test
   void shouldReturnBadRequestWhenInvalidFloor() throws Exception {
     SectionRequest request = new SectionRequest(
       1L,
@@ -150,6 +164,17 @@ class SectionControllerTest {
       .andExpect(status().isNoContent());
 
     verify(sectionService).updateSection(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateWithInvalidData() throws Exception {
+    SectionRequest request = new SectionRequest(null, "code", "label", "description");
+    mockMvc
+      .perform(
+        put("/sections/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
   }
 
   @Test

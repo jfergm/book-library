@@ -1,3 +1,6 @@
 package dev.fer.library.dto.request;
 
-public record LibraryRequest(String name) {}
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+public record LibraryRequest(@NotNull @Size(min = 2) String name) {}

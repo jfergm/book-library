@@ -12,6 +12,7 @@ import dev.fer.library.dto.request.BookCopyUpdateRequest;
 import dev.fer.library.dto.request.BookCopyUpdateShelfRequest;
 import dev.fer.library.dto.response.BookCopyResponse;
 import dev.fer.library.service.BookCopyService;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class BookCopyController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> createBookCopy(@RequestBody BookCopyRequest request) {
+  public ResponseEntity<Void> createBookCopy(@RequestBody @Valid BookCopyRequest request) {
     BookCopyResponse response = bookCopyService.createBookCopy(request);
 
     URI location = ServletUriComponentsBuilder
@@ -51,7 +52,10 @@ public class BookCopyController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<Void> updateBookCopy(@PathVariable Long id, @RequestBody BookCopyUpdateRequest request) {
+  public ResponseEntity<Void> updateBookCopy(
+    @PathVariable Long id, 
+    @RequestBody @Valid BookCopyUpdateRequest request
+  ) {
     bookCopyService.updateBookCopy(id, request);
 
     return ResponseEntity.noContent().build();
@@ -60,7 +64,7 @@ public class BookCopyController {
   @PutMapping("/{id}/shelf")
   public ResponseEntity<Void> updateBookCopyShelf(
     @PathVariable Long id, 
-    @RequestBody BookCopyUpdateShelfRequest request
+    @RequestBody @Valid BookCopyUpdateShelfRequest request
   ) {
 
     bookCopyService.updateBookCopyShelf(id, request);

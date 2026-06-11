@@ -112,6 +112,18 @@ class AuthorControllerTest {
     verify(authorService).createAuthor(any());
   }
 
+    @Test
+  void shouldReturnBadRequestWhenCreateWithInvalidData() throws Exception {
+    AuthorRequest request = new AuthorRequest(null);
+
+    mockMvc
+      .perform(
+        post("/authors")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());
+  }
+
   @Test
   void shouldReturnNoContentWhenUpdateAuthor() throws Exception {
     when(authorService.updateAuthor(anyLong(), any())).thenReturn(authors.getFirst());
@@ -126,6 +138,18 @@ class AuthorControllerTest {
       .andExpect(status().isNoContent());
     
     verify(authorService).updateAuthor(anyLong(), any());
+  }
+
+  @Test
+  void shouldReturnBadRequestWhenUpdateAuthorWithInvalidData() throws Exception {
+    AuthorRequest request = new AuthorRequest("");
+
+    mockMvc
+      .perform(
+        put("/authors/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(TestUtils.objectAsJson(request)))
+      .andExpect(status().isBadRequest());    
   }
 
   @Test

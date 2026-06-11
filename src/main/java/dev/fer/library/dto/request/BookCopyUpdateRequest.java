@@ -1,3 +1,6 @@
 package dev.fer.library.dto.request;
 
-public record BookCopyUpdateRequest(String code) {}
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+public record BookCopyUpdateRequest(@NotNull @Size(min = 2) String code) {}
