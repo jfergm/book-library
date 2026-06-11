@@ -35,6 +35,9 @@ public class SecurityConfig {
     http
       .csrf(csrf -> csrf.disable()) // Disabled because API uses JWT (stateless authentication)
       .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/swagger-ui.html").permitAll()
+        .requestMatchers("/swagger-ui/**").permitAll()
+        .requestMatchers("/v3/api-docs/**").permitAll()
         .requestMatchers("/auth/*").permitAll()
         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll() 
         .anyRequest().authenticated() // Allow access to all endpoints just for auth users
