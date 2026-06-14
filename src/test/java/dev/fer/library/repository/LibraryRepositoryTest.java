@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import dev.fer.library.entity.Library;
 
@@ -69,5 +71,20 @@ class LibraryRepositoryTest {
 
     assertThat(library.getName()).isEqualTo(updated.getName());
     assertThat(library.getId()).isEqualTo(updated.getId());
+  }
+
+  @Test
+  void shouldReturnLibrariesPaginated() {
+    libraryRepository.save(new Library(null, "LIB 1"));
+    libraryRepository.save(new Library(null, "LIB 2"));
+    libraryRepository.save(new Library(null, "LIB 3"));
+
+    Page<Library> librariesPage = libraryRepository.findAll(PageRequest.of(0, 1));
+    assertThat(librariesPage.getContent()).hasSize(1);
+    assertThat(librariesPage.getTotalElements()).isEqualTo(4);
+    assertThat(librariesPage.getTotalPages()).isEqualTo(4);
+    assertThat(librariesPage.getNumber()).isEqualTo(0);
+    assertThat(librariesPage.isFirst()).isTrue();
+    assertThat(librariesPage.isLast()).isFalse();
   }
 }

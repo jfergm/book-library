@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import dev.fer.library.dto.request.LibraryRequest;
 import dev.fer.library.dto.response.LibraryResponse;
@@ -73,14 +76,16 @@ class LibraryServiceTest {
   @Test
   void shouldReturnLibraries() {
     List<Library> libraries = librariesResponse.stream().map(t -> new Library(t.id(), t.name()) ).toList();
-    when(libraryRepository.findAll()).thenReturn(libraries);
+    when(libraryRepository.findAll(any(Pageable.class))).thenReturn(
+      new PageImpl<>(libraries)
+    );
 
-    List<LibraryResponse> libs = libraryService.getLibraries();
+    List<LibraryResponse> libs = libraryService.getLibraries(PageRequest.of(0, 20));
 
 
     assertThat(libs).hasSize(3);
     assertThat(libs.getFirst().id()).isEqualTo(librariesResponse.getFirst().id());
-    verify(libraryRepository).findAll();
+    verify(libraryRepository).findAll(any(Pageable.class));
   }
 
   @Test
