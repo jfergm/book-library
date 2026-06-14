@@ -1,5 +1,6 @@
 package dev.fer.library.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,9 +19,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -90,13 +93,51 @@ class SectionControllerTest {
 
   @Test
   void shouldReturnSectionList() throws Exception {
-    when(sectionService.getSections()).thenReturn(sections);
+    when(sectionService.getSections(any(Pageable.class))).thenReturn(sections);
 
     mockMvc.perform(get("/sections"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(3)));
     
-    verify(sectionService).getSections();
+    verify(sectionService).getSections(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPaginationToService() throws Exception {
+    when(sectionService.getSections(any(Pageable.class))).thenReturn(sections);
+
+    mockMvc
+    .perform(get("/sections")
+      .param("page", "1")
+      .param("size", "20"))
+    .andExpect(status().isOk());
+    
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+    verify(sectionService).getSections(captor.capture());
+
+    Pageable pageable = captor.getValue();
+    assertThat(pageable.getPageNumber()).isEqualTo(1);
+    assertThat(pageable.getPageSize()).isEqualTo(20);
+
+    verify(sectionService).getSections(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPaginationDefault() throws Exception {
+    when(sectionService.getSections(any(Pageable.class))).thenReturn(sections);
+
+    mockMvc
+    .perform(get("/sections"))
+    .andExpect(status().isOk());
+    
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+    verify(sectionService).getSections(captor.capture());
+
+    Pageable pageable = captor.getValue();
+    assertThat(pageable.getPageNumber()).isEqualTo(0);
+    assertThat(pageable.getPageSize()).isEqualTo(20);
+
+    verify(sectionService).getSections(any(Pageable.class));
   }
 
   @Test

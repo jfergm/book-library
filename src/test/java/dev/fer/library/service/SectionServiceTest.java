@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import dev.fer.library.dto.request.SectionRequest;
 import dev.fer.library.dto.request.SectionUpdateRequest;
@@ -85,12 +88,14 @@ class SectionServiceTest {
 
   @Test
   void shouldReturnSectionList() {
-    when(sectionRepository.findAll()).thenReturn(sections);
+    when(sectionRepository.findAll(any(Pageable.class))).thenReturn(
+      new PageImpl<>(sections)
+    );
 
-    List<SectionResponse> secs = sectionService.getSections();
+    List<SectionResponse> secs = sectionService.getSections(PageRequest.of(0, 20));
 
     assertThat(secs).hasSize(3);
-    verify(sectionRepository).findAll();
+    verify(sectionRepository).findAll(any(Pageable.class));
   }
 
   @Test

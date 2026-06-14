@@ -3,6 +3,7 @@ package dev.fer.library.controller;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,8 +58,8 @@ public class SectionController {
     @ApiResponse(responseCode = "200", description = "Sections fetched successfully")
   })
   @GetMapping("")
-  public ResponseEntity<List<SectionResponse>> getSections() {
-    return ResponseEntity.ok(sectionService.getSections());
+  public ResponseEntity<List<SectionResponse>> getSections(Pageable pageable) {
+    return ResponseEntity.ok(sectionService.getSections(pageable));
   }
 
   @Operation(summary = "Add Section", description = "Add new Section")
