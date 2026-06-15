@@ -18,6 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import dev.fer.library.dto.request.ShelfRequest;
 import dev.fer.library.dto.response.ShelfResponse;
@@ -81,12 +84,14 @@ class ShelfServiceTest {
 
   @Test
   void shouldReturnShelvesList() {
-    when(shelfRepository.findAll()).thenReturn(shelves);
+    when(shelfRepository.findAll(any(Pageable.class))).thenReturn(
+      new PageImpl<>(shelves)
+    );
 
-    List<ShelfResponse> res = shelfService.getShelves();
+    List<ShelfResponse> res = shelfService.getShelves(PageRequest.of(0, 1));
 
     assertThat(res).hasSize(3);
-    verify(shelfRepository).findAll();
+    verify(shelfRepository).findAll(any(Pageable.class));
   }
 
   @Test

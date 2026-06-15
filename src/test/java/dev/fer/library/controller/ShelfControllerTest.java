@@ -1,5 +1,6 @@
 package dev.fer.library.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,9 +22,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -93,13 +96,55 @@ class ShelfControllerTest {
 
   @Test
   void shouldReturnShelvesList() throws Exception {
-    when(shelfService.getShelves()).thenReturn(shelves);
+    when(shelfService.getShelves(any(Pageable.class))).thenReturn(shelves);
 
     mockMvc.perform(get("/shelves"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(3)));
 
-    verify(shelfService).getShelves();
+    verify(shelfService).getShelves(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPagination() throws Exception {
+    when(shelfService.getShelves(any(Pageable.class))).thenReturn(shelves);
+
+    mockMvc
+      .perform(get("/shelves")
+        .param("page", "2")
+        .param("size", "15"))
+      .andExpect(status().isOk());
+
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(shelfService).getShelves(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(2);
+    assertThat(pageable.getPageSize()).isEqualTo(15);
+
+    verify(shelfService).getShelves(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassDefaultPagination() throws Exception {
+    when(shelfService.getShelves(any(Pageable.class))).thenReturn(shelves);
+
+    mockMvc
+      .perform(get("/shelves"))
+      .andExpect(status().isOk());
+
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(shelfService).getShelves(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(0);
+    assertThat(pageable.getPageSize()).isEqualTo(20);
+
+    verify(shelfService).getShelves(any(Pageable.class));
   }
 
   @Test

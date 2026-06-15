@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.ShelfRequest;
@@ -40,8 +41,9 @@ public class ShelfService {
     return shelfMapper.toResponse(shelf.get());
   }
 
-  public List<ShelfResponse> getShelves() {
-    return shelfMapper.toResponseList((List<Shelf>) shelfRepository.findAll());
+  public List<ShelfResponse> getShelves( Pageable pageable) {
+    return shelfMapper.toResponseList(
+      (List<Shelf>) shelfRepository.findAll(pageable).getContent());
   }
 
   public ShelfResponse createShelf(ShelfRequest request) {

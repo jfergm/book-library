@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,8 +57,8 @@ public class ShelfController {
     @ApiResponse(responseCode = "200", description = "Shelves fetched successfully"),
   })
   @GetMapping("")
-  public ResponseEntity<List<ShelfResponse>> getShelves() {
-    return ResponseEntity.ok(shelfService.getShelves());
+  public ResponseEntity<List<ShelfResponse>> getShelves(Pageable pageable) {
+    return ResponseEntity.ok(shelfService.getShelves(pageable));
   }
   
   @Operation(summary = "Add Shelf")
