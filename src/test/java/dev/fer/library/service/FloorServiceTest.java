@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import dev.fer.library.dto.request.FloorRequest;
 import dev.fer.library.dto.request.FloorUpdateRequest;
@@ -80,9 +82,11 @@ class FloorServiceTest {
 
   @Test
   void shouldReturnFloorList() {
-    when(floorRepository.findAll()).thenReturn(floors);
+    when(floorRepository.findAll(any(Pageable.class))).thenReturn(
+      new PageImpl<>(floors)
+    );
 
-    List<FloorResponse> fs = floorService.getFloors();
+    List<FloorResponse> fs = floorService.getFloors(any(Pageable.class));
 
     assertThat(fs).hasSize(4);
     verify(floorRepository).findAll();

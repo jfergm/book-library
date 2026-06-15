@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.FloorRequest;
@@ -45,8 +46,8 @@ public class FloorService {
     return floorMapper.toResponse(floor.get());
   }
 
-  public List<FloorResponse> getFloors() {
-    return floorMapper.toResponseList((List<Floor>)floorRepository.findAll());
+  public List<FloorResponse> getFloors(Pageable pageable) {
+    return floorMapper.toResponseList((List<Floor>)floorRepository.findAll(pageable).getContent());
   }
 
   public FloorResponse createFloor(FloorRequest request) {

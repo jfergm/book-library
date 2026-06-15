@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,8 +58,8 @@ public class FloorController {
     @ApiResponse(responseCode = "200", description = "Floors fetched successfully")
   })
   @GetMapping("")
-  public ResponseEntity<List<FloorResponse>> getFloors() {
-    List<FloorResponse> floors = floorService.getFloors();
+  public ResponseEntity<List<FloorResponse>> getFloors(Pageable pageable) {
+    List<FloorResponse> floors = floorService.getFloors(pageable);
 
     return ResponseEntity.ok(floors);
   }
