@@ -42,8 +42,7 @@ public class ShelfService {
   }
 
   public List<ShelfResponse> getShelves( Pageable pageable) {
-    return shelfMapper.toResponseList(
-      (List<Shelf>) shelfRepository.findAll(pageable).getContent());
+    return shelfMapper.toResponseList(shelfRepository.findAll(pageable).getContent());
   }
 
   public ShelfResponse createShelf(ShelfRequest request) {

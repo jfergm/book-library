@@ -47,7 +47,7 @@ public class BookcaseService {
 
   public List<BookcaseResponse> getBookcases(Pageable pageable) {
     return bookcaseMapper.toResponseList(
-      (List<Bookcase>) bookcaseRepository.findAll(pageable).getContent());
+      bookcaseRepository.findAll(pageable).getContent());
   }
 
   public BookcaseResponse createBookcase(BookcaseRequest request) {

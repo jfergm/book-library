@@ -46,7 +46,7 @@ public class LoanService {
   }
 
   public List<LoanResponse> getLoans(Pageable pageable) {
-    List<Loan> loans = (List<Loan>) loanRepository.findAll(pageable).getContent();
+    List<Loan> loans = loanRepository.findAll(pageable).getContent();
 
     return loanMapper.toResponseList(loans);
   }

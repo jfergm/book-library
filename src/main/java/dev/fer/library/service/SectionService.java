@@ -47,7 +47,7 @@ public class SectionService {
   }
 
   public List<SectionResponse> getSections(Pageable pageable) {
-    return sectionMapper.toResponseList((List<Section>) sectionRepository.findAll(pageable).getContent());
+    return sectionMapper.toResponseList(sectionRepository.findAll(pageable).getContent());
   }
 
   public SectionResponse createSection(SectionRequest request) {

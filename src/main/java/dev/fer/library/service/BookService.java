@@ -42,8 +42,7 @@ public class BookService {
   }
 
   public List<BookResponse> getBooks(Pageable pageable) {
-    return bookMapper.toResponseList(
-      (List<Book>) bookRepository.findAll(pageable).getContent());
+    return bookMapper.toResponseList(bookRepository.findAll(pageable).getContent());
   }
 
   public BookResponse createBook(BookRequest request) {

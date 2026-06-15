@@ -36,7 +36,8 @@ public class LibraryService {
   }
 
   public List<LibraryResponse> getLibraries(Pageable pageable) {
-    return libraryMapper.toResponseList((List<Library>) libraryRepository.findAll(pageable).getContent());
+    return libraryMapper.toResponseList(
+      libraryRepository.findAll(pageable).getContent());
   }
 
   public LibraryResponse createLibrary(LibraryRequest libraryRequest) {

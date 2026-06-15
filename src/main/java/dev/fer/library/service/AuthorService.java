@@ -36,8 +36,7 @@ public class AuthorService {
   }
 
   public List<AuthorResponse> getAuthors(Pageable pageable) {
-    return authorMapper.toResponseList(
-      (List<Author>) authorRepository.findAll(pageable).getContent());
+    return authorMapper.toResponseList(authorRepository.findAll(pageable).getContent());
   }
 
   public AuthorResponse createAuthor(AuthorRequest request) {

@@ -47,7 +47,7 @@ public class FloorService {
   }
 
   public List<FloorResponse> getFloors(Pageable pageable) {
-    return floorMapper.toResponseList((List<Floor>)floorRepository.findAll(pageable).getContent());
+    return floorMapper.toResponseList(floorRepository.findAll(pageable).getContent());
   }
 
   public FloorResponse createFloor(FloorRequest request) {
