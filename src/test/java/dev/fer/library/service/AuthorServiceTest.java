@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import dev.fer.library.dto.request.AuthorRequest;
 import dev.fer.library.dto.response.AuthorResponse;
@@ -69,16 +72,18 @@ class AuthorServiceTest {
 
   @Test
   void shouldReturnAuthorList() {
-    when(authorRepository.findAll()).thenReturn(authors);
+    when(authorRepository.findAll(any(Pageable.class))).thenReturn(
+      new PageImpl<>(authors)
+    );
 
-    List<AuthorResponse> authorsList = authorService.getAuthors();
+    List<AuthorResponse> authorsList = authorService.getAuthors(PageRequest.of(0, 1));
     
     assertThat(authorsList).hasSize(3);
     assertThat(authorsList.get(0).id()).isEqualTo(1L);
     assertThat(authorsList.get(1).id()).isEqualTo(2L);
     assertThat(authorsList.get(2).id()).isEqualTo(3L);
     
-    verify(authorRepository).findAll();
+    verify(authorRepository).findAll(any(Pageable.class));
   }
 
   @Test

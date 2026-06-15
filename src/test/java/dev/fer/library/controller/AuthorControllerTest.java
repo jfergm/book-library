@@ -2,9 +2,11 @@ package dev.fer.library.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -20,6 +22,7 @@ import dev.fer.library.service.AuthorService;
 import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,13 +93,53 @@ class AuthorControllerTest {
 
   @Test
   void shouldReturnAuthorList() throws Exception {
-    when(authorService.getAuthors()).thenReturn(authors);
+    when(authorService.getAuthors(any(Pageable.class))).thenReturn(authors);
 
     mockMvc.perform(get("/authors"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(3)));
     
-    verify(authorService).getAuthors();
+    verify(authorService).getAuthors(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPagination() throws Exception {
+    when(authorService.getAuthors(any(Pageable.class))).thenReturn(authors);
+
+    mockMvc
+      .perform(get("/authors")
+        .param("page", "2")
+        .param("size", "15"))
+      .andExpect(status().isOk());
+      
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(authorService).getAuthors(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(2);
+    assertThat(pageable.getPageSize()).isEqualTo(15);
+    verify(authorService).getAuthors(any(Pageable.class));
+  }
+
+@Test
+  void shouldPassDefaultPagination() throws Exception {
+    when(authorService.getAuthors(any(Pageable.class))).thenReturn(authors);
+
+    mockMvc
+      .perform(get("/authors"))
+      .andExpect(status().isOk());
+      
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(authorService).getAuthors(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(0);
+    assertThat(pageable.getPageSize()).isEqualTo(20);
+    verify(authorService).getAuthors(any(Pageable.class));
   }
 
   @Test
