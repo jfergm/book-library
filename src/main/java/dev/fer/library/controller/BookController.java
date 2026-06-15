@@ -3,6 +3,7 @@ package dev.fer.library.controller;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,8 +57,8 @@ public class BookController {
     @ApiResponse(responseCode = "200", description = "Books fetched successfully"),
   })
   @GetMapping("")
-  public ResponseEntity<List<BookResponse>> getBooks() {
-    return ResponseEntity.ok(bookService.getBooks());
+  public ResponseEntity<List<BookResponse>> getBooks(Pageable pageable) {
+    return ResponseEntity.ok(bookService.getBooks(pageable));
   }
 
   @Operation(summary = "Add Book", description = "Add new Book")

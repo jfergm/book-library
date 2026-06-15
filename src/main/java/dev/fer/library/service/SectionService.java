@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.SectionRequest;
@@ -45,8 +46,8 @@ public class SectionService {
     return sectionMapper.toResponse(section.get());
   }
 
-  public List<SectionResponse> getSections() {
-    return sectionMapper.toResponseList((List<Section>) sectionRepository.findAll());
+  public List<SectionResponse> getSections(Pageable pageable) {
+    return sectionMapper.toResponseList(sectionRepository.findAll(pageable).getContent());
   }
 
   public SectionResponse createSection(SectionRequest request) {

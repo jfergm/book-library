@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.BookRequest;
@@ -40,8 +41,8 @@ public class BookService {
     return bookMapper.toResponse(book.get());
   }
 
-  public List<BookResponse> getBooks() {
-    return bookMapper.toResponseList((List<Book>) bookRepository.findAll());
+  public List<BookResponse> getBooks(Pageable pageable) {
+    return bookMapper.toResponseList(bookRepository.findAll(pageable).getContent());
   }
 
   public BookResponse createBook(BookRequest request) {

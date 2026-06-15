@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import dev.fer.library.entity.Bookcase;
 import dev.fer.library.entity.Floor;
@@ -109,4 +111,18 @@ class ShelfRepositoryTest {
 
   }
 
+  @Test
+  void shouldReturnLibrariesPaginated() {
+    shelfRepository.save(new Shelf(null, "SHLF_1", "SHELF 1", shelf.getBookcase()));
+    shelfRepository.save(new Shelf(null, "SHLF_2", "SHELF 2", shelf.getBookcase()));
+    shelfRepository.save(new Shelf(null, "SHLF_3", "SHELF 3", shelf.getBookcase()));
+
+    Page<Shelf> shelvesPage = shelfRepository.findAll(PageRequest.of(0, 1));
+    assertThat(shelvesPage.getContent()).hasSize(1);
+    assertThat(shelvesPage.getTotalElements()).isEqualTo(4);
+    assertThat(shelvesPage.getTotalPages()).isEqualTo(4);
+    assertThat(shelvesPage.getNumber()).isZero();
+    assertThat(shelvesPage.isFirst()).isTrue();
+    assertThat(shelvesPage.isLast()).isFalse();
+  }
 }

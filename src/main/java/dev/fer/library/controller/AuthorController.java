@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,8 +56,8 @@ public class AuthorController {
     @ApiResponse(responseCode = "200", description = "Authors fetched successfully"),
   })
   @GetMapping("")
-  public ResponseEntity<List<AuthorResponse>> getAuthors() {
-    return ResponseEntity.ok(authorService.getAuthors());
+  public ResponseEntity<List<AuthorResponse>> getAuthors(Pageable pageable) {
+    return ResponseEntity.ok(authorService.getAuthors(pageable));
   }
 
   @Operation(summary = "Add Author", description = "Add new Author")

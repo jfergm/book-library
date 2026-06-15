@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.LibraryRequest;
@@ -34,8 +35,9 @@ public class LibraryService {
     return libraryMapper.toResponse(library.get());
   }
 
-  public List<LibraryResponse> getLibraries() {
-    return libraryMapper.toResponseList((List<Library>) libraryRepository.findAll());
+  public List<LibraryResponse> getLibraries(Pageable pageable) {
+    return libraryMapper.toResponseList(
+      libraryRepository.findAll(pageable).getContent());
   }
 
   public LibraryResponse createLibrary(LibraryRequest libraryRequest) {

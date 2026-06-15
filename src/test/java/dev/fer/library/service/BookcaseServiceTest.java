@@ -18,6 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import dev.fer.library.dto.request.BookcaseRequest;
 import dev.fer.library.dto.response.BookcaseResponse;
@@ -80,13 +83,16 @@ class BookcaseServiceTest {
 
   @Test
   void shouldReturnBookcaseList() {
-    when(bookcaseRepository.findAll()).thenReturn(bookcases);
+    when(bookcaseRepository.findAll(any(Pageable.class))).thenReturn(
+      new PageImpl<>(bookcases)
+    );
 
-    List<BookcaseResponse> bookcasesResponse = bookcaseService.getBookcases();
+    List<BookcaseResponse> bookcasesResponse = 
+      bookcaseService.getBookcases(PageRequest.of(0, 1));
 
     assertThat(bookcasesResponse).hasSize(3);
 
-    verify(bookcaseRepository).findAll();
+    verify(bookcaseRepository).findAll(any(Pageable.class));
   }
 
   @Test

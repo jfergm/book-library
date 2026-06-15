@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import dev.fer.library.entity.Author;
 import dev.fer.library.entity.Book;
@@ -76,5 +78,20 @@ class BookRepositoryTest {
     assertThat(updated.getIsbn()).isEqualTo(book.getIsbn());
     assertThat(updated.getAuthor().getId()).isEqualTo(book.getAuthor().getId());
     
+  }
+
+  @Test
+  void shouldReturnBooksPaginated() {
+    bookRepository.save(new Book(null, "Book 1", "ISBN1", book.getAuthor()));
+    bookRepository.save(new Book(null, "Book 2", "ISBN2", book.getAuthor()));
+    bookRepository.save(new Book(null, "Book 3", "ISBN3", book.getAuthor()));
+
+    Page<Book> booksPage = bookRepository.findAll(PageRequest.of(0, 1));
+    assertThat(booksPage.getContent()).hasSize(1);
+    assertThat(booksPage.getTotalElements()).isEqualTo(4);
+    assertThat(booksPage.getTotalPages()).isEqualTo(4);
+    assertThat(booksPage.getNumber()).isZero();
+    assertThat(booksPage.isFirst()).isTrue();
+    assertThat(booksPage.isLast()).isFalse();
   }
 }

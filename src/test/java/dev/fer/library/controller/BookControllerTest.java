@@ -1,5 +1,6 @@
 package dev.fer.library.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,9 +22,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -93,13 +96,55 @@ class BookControllerTest {
 
   @Test
   void shouldReturnBooksList() throws Exception {
-    when(bookService.getBooks()).thenReturn(books);
+    when(bookService.getBooks(any(Pageable.class))).thenReturn(books);
     
     mockMvc.perform(get("/books"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(3)));
 
-    verify(bookService).getBooks();
+    verify(bookService).getBooks(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPagination() throws Exception {
+    when(bookService.getBooks(any(Pageable.class))).thenReturn(books);
+    
+    mockMvc
+      .perform(get("/books")
+        .param("page", "2")
+        .param("size", "15"))
+      .andExpect(status().isOk());
+
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(bookService).getBooks(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(2);
+    assertThat(pageable.getPageSize()).isEqualTo(15);
+
+    verify(bookService).getBooks(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassDefaultPagination() throws Exception {
+    when(bookService.getBooks(any(Pageable.class))).thenReturn(books);
+    
+    mockMvc
+      .perform(get("/books"))
+      .andExpect(status().isOk());
+
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(bookService).getBooks(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isZero();
+    assertThat(pageable.getPageSize()).isEqualTo(20);
+
+    verify(bookService).getBooks(any(Pageable.class));
   }
 
   @Test

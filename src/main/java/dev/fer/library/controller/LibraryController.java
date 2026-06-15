@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +47,8 @@ public class LibraryController {
     @ApiResponse(responseCode = "200", description = "Libraries fetched successfully")
   )
   @GetMapping("")
-  public ResponseEntity<List<LibraryResponse>> getLibraries() {
-    List<LibraryResponse> libraries = libraryService.getLibraries();
+  public ResponseEntity<List<LibraryResponse>> getLibraries(Pageable pageble) {
+    List<LibraryResponse> libraries = libraryService.getLibraries(pageble);
 
     return ResponseEntity.ok(libraries);
   }

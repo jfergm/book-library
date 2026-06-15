@@ -16,9 +16,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -36,6 +38,7 @@ import dev.fer.library.service.FloorService;
 import dev.fer.library.service.JwtService;
 import dev.fer.library.utils.TestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @WebMvcTest(FloorController.class)
@@ -90,13 +93,55 @@ class FloorControllerTest {
 
   @Test
   void shouldReturnFloorList() throws Exception {
-    when(floorService.getFloors()).thenReturn(floors);
+    when(floorService.getFloors(any(Pageable.class))).thenReturn(floors);
     
     mockMvc.perform(get("/floors"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(4)));
 
-    verify(floorService).getFloors();
+    verify(floorService).getFloors(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPagination() throws Exception {
+    when(floorService.getFloors(any(Pageable.class))).thenReturn(floors);
+    
+    mockMvc
+      .perform(get("/floors")
+        .param("page", "1")
+        .param("size", "10"))
+      .andExpect(status().isOk());
+    
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(floorService).getFloors(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(1);
+    assertThat(pageable.getPageSize()).isEqualTo(10);
+
+    verify(floorService).getFloors(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPaginationWitDefaults() throws Exception {
+    when(floorService.getFloors(any(Pageable.class))).thenReturn(floors);
+    
+    mockMvc
+      .perform(get("/floors"))
+      .andExpect(status().isOk());
+    
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(floorService).getFloors(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isZero();
+    assertThat(pageable.getPageSize()).isEqualTo(20);
+
+    verify(floorService).getFloors(any(Pageable.class));
   }
 
   @Test

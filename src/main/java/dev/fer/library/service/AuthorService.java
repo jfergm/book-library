@@ -5,6 +5,7 @@ import dev.fer.library.mapper.AuthorMapper;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.fer.library.dto.request.AuthorRequest;
@@ -34,8 +35,8 @@ public class AuthorService {
     return authorMapper.toResponse(author.get());
   }
 
-  public List<AuthorResponse> getAuthors() {
-    return authorMapper.toResponseList((List<Author>) authorRepository.findAll());
+  public List<AuthorResponse> getAuthors(Pageable pageable) {
+    return authorMapper.toResponseList(authorRepository.findAll(pageable).getContent());
   }
 
   public AuthorResponse createAuthor(AuthorRequest request) {
