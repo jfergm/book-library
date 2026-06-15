@@ -90,7 +90,7 @@ class BookRepositoryTest {
     assertThat(booksPage.getContent()).hasSize(1);
     assertThat(booksPage.getTotalElements()).isEqualTo(4);
     assertThat(booksPage.getTotalPages()).isEqualTo(4);
-    assertThat(booksPage.getNumber()).isEqualTo(0);
+    assertThat(booksPage.getNumber()).isZero();
     assertThat(booksPage.isFirst()).isTrue();
     assertThat(booksPage.isLast()).isFalse();
   }

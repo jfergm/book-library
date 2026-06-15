@@ -83,7 +83,7 @@ class LibraryRepositoryTest {
     assertThat(librariesPage.getContent()).hasSize(1);
     assertThat(librariesPage.getTotalElements()).isEqualTo(4);
     assertThat(librariesPage.getTotalPages()).isEqualTo(4);
-    assertThat(librariesPage.getNumber()).isEqualTo(0);
+    assertThat(librariesPage.getNumber()).isZero();
     assertThat(librariesPage.isFirst()).isTrue();
     assertThat(librariesPage.isLast()).isFalse();
   }

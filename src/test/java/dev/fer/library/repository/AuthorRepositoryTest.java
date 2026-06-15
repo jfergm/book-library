@@ -80,7 +80,7 @@ class AuthorRepositoryTest {
     assertThat(authorsPage.getContent()).hasSize(1);
     assertThat(authorsPage.getTotalElements()).isEqualTo(4);
     assertThat(authorsPage.getTotalPages()).isEqualTo(4);
-    assertThat(authorsPage.getNumber()).isEqualTo(0);
+    assertThat(authorsPage.getNumber()).isZero();
     assertThat(authorsPage.isFirst()).isTrue();
     assertThat(authorsPage.isLast()).isFalse();
   }

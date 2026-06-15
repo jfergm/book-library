@@ -134,7 +134,7 @@ class SectionControllerTest {
     verify(sectionService).getSections(captor.capture());
 
     Pageable pageable = captor.getValue();
-    assertThat(pageable.getPageNumber()).isEqualTo(0);
+    assertThat(pageable.getPageNumber()).isZero();
     assertThat(pageable.getPageSize()).isEqualTo(20);
 
     verify(sectionService).getSections(any(Pageable.class));

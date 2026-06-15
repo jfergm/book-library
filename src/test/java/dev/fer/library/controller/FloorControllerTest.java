@@ -138,7 +138,7 @@ class FloorControllerTest {
 
     Pageable pageable = captor.getValue();
 
-    assertThat(pageable.getPageNumber()).isEqualTo(0);
+    assertThat(pageable.getPageNumber()).isZero();
     assertThat(pageable.getPageSize()).isEqualTo(20);
 
     verify(floorService).getFloors(any(Pageable.class));

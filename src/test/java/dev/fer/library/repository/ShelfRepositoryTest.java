@@ -121,7 +121,7 @@ class ShelfRepositoryTest {
     assertThat(shelvesPage.getContent()).hasSize(1);
     assertThat(shelvesPage.getTotalElements()).isEqualTo(4);
     assertThat(shelvesPage.getTotalPages()).isEqualTo(4);
-    assertThat(shelvesPage.getNumber()).isEqualTo(0);
+    assertThat(shelvesPage.getNumber()).isZero();
     assertThat(shelvesPage.isFirst()).isTrue();
     assertThat(shelvesPage.isLast()).isFalse();
   }

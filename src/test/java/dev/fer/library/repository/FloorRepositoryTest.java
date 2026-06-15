@@ -90,7 +90,7 @@ class FloorRepositoryTest {
     assertThat(floorsPage.getContent()).hasSize(1);
     assertThat(floorsPage.getTotalElements()).isEqualTo(4);
     assertThat(floorsPage.getTotalPages()).isEqualTo(4);
-    assertThat(floorsPage.getNumber()).isEqualTo(0);
+    assertThat(floorsPage.getNumber()).isZero();
     assertThat(floorsPage.isFirst()).isTrue();
     assertThat(floorsPage.isLast()).isFalse();
   }

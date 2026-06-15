@@ -137,7 +137,7 @@ class AuthorControllerTest {
 
     Pageable pageable = captor.getValue();
 
-    assertThat(pageable.getPageNumber()).isEqualTo(0);
+    assertThat(pageable.getPageNumber()).isZero();
     assertThat(pageable.getPageSize()).isEqualTo(20);
     verify(authorService).getAuthors(any(Pageable.class));
   }
