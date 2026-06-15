@@ -3,6 +3,7 @@ package dev.fer.library.service;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,8 +45,8 @@ public class LoanService {
     return loanMapper.toResponse(loan);
   }
 
-  public List<LoanResponse> getLoans() {
-    List<Loan> loans = (List<Loan>) loanRepository.findAll();
+  public List<LoanResponse> getLoans(Pageable pageable) {
+    List<Loan> loans = (List<Loan>) loanRepository.findAll(pageable).getContent();
 
     return loanMapper.toResponseList(loans);
   }

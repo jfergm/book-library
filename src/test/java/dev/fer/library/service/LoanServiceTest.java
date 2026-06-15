@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import dev.fer.library.dto.request.LoanRequest;
 import dev.fer.library.dto.response.LoanResponse;
@@ -127,13 +130,15 @@ class LoanServiceTest {
 
   @Test
   void shouldReturnLoansList() {
-    when(loanRepository.findAll()).thenReturn(loans);
+    when(loanRepository.findAll(any(Pageable.class))).thenReturn(
+      new PageImpl<>(loans)
+    );
 
-    List<LoanResponse> response = loanService.getLoans();
+    List<LoanResponse> response = loanService.getLoans(PageRequest.of(0, 1));
 
     assertThat(response).hasSize(3);
 
-    verify(loanRepository).findAll();
+    verify(loanRepository).findAll(any(Pageable.class));
   }
 
   @Test

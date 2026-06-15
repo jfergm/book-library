@@ -1,5 +1,6 @@
 package dev.fer.library.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
@@ -19,9 +20,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -130,13 +133,55 @@ class LoanControllerTest {
 
   @Test
   void shouldReturnLoanList() throws Exception {
-    when(loanService.getLoans()).thenReturn(loans);
+    when(loanService.getLoans(any(Pageable.class))).thenReturn(loans);
 
     mockMvc.perform(get("/loans"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(3)));
 
-    verify(loanService).getLoans();
+    verify(loanService).getLoans(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassPagination() throws Exception {
+    when(loanService.getLoans(any(Pageable.class))).thenReturn(loans);
+
+    mockMvc
+      .perform(get("/loans")
+        .param("page", "2")
+        .param("size", "15"))
+      .andExpect(status().isOk());
+
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(loanService).getLoans(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(2);
+    assertThat(pageable.getPageSize()).isEqualTo(15);
+
+    verify(loanService).getLoans(any(Pageable.class));
+  }
+
+  @Test
+  void shouldPassDefaultPagination() throws Exception {
+    when(loanService.getLoans(any(Pageable.class))).thenReturn(loans);
+
+    mockMvc
+      .perform(get("/loans"))
+      .andExpect(status().isOk());
+
+    ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+    verify(loanService).getLoans(captor.capture());
+
+    Pageable pageable = captor.getValue();
+
+    assertThat(pageable.getPageNumber()).isEqualTo(0);
+    assertThat(pageable.getPageSize()).isEqualTo(20);
+
+    verify(loanService).getLoans(any(Pageable.class));
   }
 
   @Test
